@@ -36,6 +36,9 @@ module.exports = (env) => {
       path: path.resolve(__dirname, 'dist'),
       clean: true,
     },
+    resolve: {
+      extensions: ['.ts', '.js'],
+    },
     module: {
       rules: [
         {

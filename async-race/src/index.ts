@@ -1,10 +1,5 @@
-import "./style.scss";
-import ninjaImg from "./ninja.png";
+import App from './app';
 
-const test = document.createElement("div");
-test.classList.add("test");
-test.textContent = "dsdd321321a";
-const image = document.createElement("img");
-image.src = ninjaImg;
+const root = document.body;
 
-document.body.append(test, image);
+const app = new App(root);

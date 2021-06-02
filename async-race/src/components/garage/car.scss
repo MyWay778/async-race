@@ -1,0 +1,14 @@
+.car-header {
+  display: flex;
+  column-gap: 10px;
+}
+
+.car-track {
+  display: flex;
+  margin-top: 15px;
+  column-gap: 15px;
+}
+
+.car-track__car {
+  flex-grow: 1;
+}
