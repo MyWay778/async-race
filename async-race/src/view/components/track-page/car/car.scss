@@ -9,6 +9,10 @@
   column-gap: 15px;
 }
 
-.car-track__car {
+.car-track-car {
   flex-grow: 1;
+  margin: 0;
+}
+.car-track-car__image {
+  transform: translateX(0);
 }

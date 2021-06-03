@@ -1,4 +1,6 @@
-class BaseComponent {
+import IBaseComponent from "./i_base-component";
+
+class BaseComponent implements IBaseComponent{
   readonly element: HTMLElement;
 
   constructor(elementTag: keyof HTMLElementTagNameMap) {

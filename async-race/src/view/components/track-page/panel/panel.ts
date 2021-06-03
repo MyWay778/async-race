@@ -1,5 +1,5 @@
-import BaseComponent from "../../base-component";
-import CarInput from "./car-input";
+import BaseComponent from '../../shared/base-component';
+import CarInput from './car-input';
 import './panel.scss';
 
 class Panel extends BaseComponent {
@@ -12,7 +12,6 @@ class Panel extends BaseComponent {
     const create = new CarInput('create');
     create.render(this.element);
   }
-
 }
 
 export default Panel;

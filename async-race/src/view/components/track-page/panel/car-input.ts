@@ -1,4 +1,4 @@
-import BaseComponent from "../../base-component";
+import BaseComponent from "../../shared/base-component";
 
 class CarInput  extends BaseComponent {
   readonly element: HTMLDivElement;

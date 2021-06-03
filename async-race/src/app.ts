@@ -1,20 +1,24 @@
-import Garage from './components/garage/garage';
-import Header from './components/header/header';
+import Controller, { IController } from './controller/controller';
+import View, { IView } from './view/view';
+import Store from './store/store';
 
 import './style.scss';
 
-class App {
-  private root: HTMLElement;
+export default class App {
+  private controller: IController;
+  private view: IView;
+  private store: any;
 
-  constructor(root: HTMLElement) {
-    this.root = root;
+  constructor(private readonly root: HTMLElement) {}
 
-    const header = new Header();
-    header.render(root);
+  init(): void {
+    this.view = new View(this.root);
+    this.view.init();
 
-    const garage = new Garage();
-    garage.render(root);
+    this.store = new Store(this.view);
+
+    this.controller = new Controller(this.store);
+    this.controller.showCars();
+    
   }
 }
-
-export default App;

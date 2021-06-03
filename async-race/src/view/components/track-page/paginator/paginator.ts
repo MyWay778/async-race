@@ -1,4 +1,4 @@
-import BaseComponent from "../base-component";
+import BaseComponent from '../../shared/base-component';
 import './paginator.scss';
 
 class Paginator extends BaseComponent {

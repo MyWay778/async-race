@@ -23,7 +23,7 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "prettier/prettier":[ 
-      "never",
+      "off",
       {
         "singleQuote": true
       }

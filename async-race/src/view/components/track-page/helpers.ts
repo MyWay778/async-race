@@ -1,11 +1,4 @@
-import BaseComponent from '../base-component';
-import Car from './car';
-import Paginator from './paginator';
-import Panel from './panel/panel';
-
-import './garage.scss';
-
-const createTitleBlock = () => {
+export const createTitleBlock = () => {
   const titleBlock = document.createElement('div');
   titleBlock.classList.add('garage-title');
 
@@ -22,7 +15,7 @@ const createTitleBlock = () => {
   return titleBlock;
 };
 
-const createPageNumberBlock = () => {
+export const createPageNumberBlock = () => {
   const pageNumberBlock = document.createElement('div');
   pageNumberBlock.classList.add('garage-page-number');
 
@@ -38,28 +31,3 @@ const createPageNumberBlock = () => {
   
   return pageNumberBlock;
 };
-
-class Garage extends BaseComponent {
-  constructor() {
-    super('main');
-    this.element.classList.add('main');
-    const panel = new Panel();
-
-    const trackSection = document.createElement('section');
-    const titleBlock = createTitleBlock();
-    const pageNumberBlock = createPageNumberBlock();
-
-    const carList = document.createElement('ul');
-    carList.classList.add('car-list');
-    
-    const car = new Car();
-    carList.append(car.element);
-
-    const paginator = new Paginator();
-
-    trackSection.append(panel.element, titleBlock, pageNumberBlock, carList, paginator.element);
-    this.element.append(trackSection);
-  }
-}
-
-export default Garage;
