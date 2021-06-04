@@ -1,4 +1,3 @@
-
 import BaseComponent from '../shared/base-component';
 import './header.scss';
 

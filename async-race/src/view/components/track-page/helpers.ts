@@ -28,6 +28,6 @@ export const createPageNumberBlock = () => {
   pageNumber.textContent = '#1';
 
   pageNumberBlock.append(pageNumberTitle, pageNumber);
-  
+
   return pageNumberBlock;
 };

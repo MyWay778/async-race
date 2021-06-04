@@ -1,6 +1,7 @@
-import IBaseComponent from "../shared/i_base-component";
-import Car from "./car/car";
+import { CarType } from '@store/state/types';
+import IBaseComponent from '../shared/i_base-component';
 
 export default interface ITrackPage extends IBaseComponent {
-  showCars: (cars: Car[]) => void;
+  showCars: (cars: CarType[]) => void;
+  showCar: (car: CarType) => void;
 }

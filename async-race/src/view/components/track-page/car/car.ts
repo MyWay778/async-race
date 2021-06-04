@@ -3,6 +3,7 @@ import './car.scss';
 import ICar from './i_car';
 import image from '../../../../assets/images/sedan-car.svg';
 import createSvgCar from './helpers';
+import { CarHandlersType } from './types';
 
 const carSvgImage = {
   className: 'car-track-car__image',
@@ -10,21 +11,26 @@ const carSvgImage = {
   height: 22,
   viewBox: '0 0 99 37',
   imageHref: image,
-  imageId: 'car'
-}
+  imageId: 'car',
+};
 
 class Car extends BaseComponent implements ICar {
-  constructor(private name: string, private color: string) {
+  constructor(
+    private readonly id: number,
+    private readonly name: string,
+    private readonly color: string,
+    private readonly handlers: CarHandlersType
+  ) {
     super('li');
     this.element.classList.add('car');
 
     this.init();
   }
 
-  init() {
+  init = (): void => {
     this.createCarHeader();
     this.createCarTrack();
-  }
+  };
 
   private createCarTrack() {
     const carTrack = document.createElement('div');
@@ -40,7 +46,7 @@ class Car extends BaseComponent implements ICar {
     const stopBtn = document.createElement('button');
     stopBtn.classList.add('car-track-engine-control__btn');
     stopBtn.textContent = 'B';
-    
+
     const car = document.createElement('figure');
     car.classList.add('car-track-car');
 
@@ -48,7 +54,7 @@ class Car extends BaseComponent implements ICar {
     //   <svg height="22px" width="70px" style="fill: ${this.color || '#fff'}" viewbox="0 0 99 37" xmlns="http://www.w3.org/2000/svg">
     //     <use xlink:href="${image}#car"></use>
     //   </svg>`
-    
+
     const carImage2 = createSvgCar(
       carSvgImage.className,
       carSvgImage.width,
@@ -82,6 +88,9 @@ class Car extends BaseComponent implements ICar {
     const removeBtn = document.createElement('button');
     removeBtn.classList.add('car-panel__btn');
     removeBtn.textContent = 'Remove';
+    removeBtn.onclick = () => {
+      this.handlers.removeCarHandler(this.id);
+    }
 
     const carName = document.createElement('div');
     carName.classList.add('car-header__name');

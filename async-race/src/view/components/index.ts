@@ -1,8 +1,5 @@
+import Header from './header/header';
+import BaseComponent from './shared/base-component';
+import TrackPage from './track-page/track-page';
 
-import Header from "./header/header";
-import TrackPage from "./track-page/track-page";
-
-export {
-  TrackPage,
-  Header
-}
+export { TrackPage, Header,  BaseComponent};

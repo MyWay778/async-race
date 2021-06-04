@@ -1,6 +1,9 @@
-import { Car } from "../store/state/types";
+import IController from '@controller/i_controller';
+import { CarType } from '@store/state/types';
+
 
 export default interface IView {
-  init: () => void;
-  showCars: (cars: Car[]) => void;
+  init: (controller: IController) => void;
+  showCars: (cars: CarType[]) => void;
+  showCar: (car: CarType) => void;
 }

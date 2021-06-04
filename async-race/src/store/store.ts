@@ -1,22 +1,36 @@
 import { State } from './state/i_state';
 import IStore from './i_store';
-import { Car } from './state/types';
+import { CarType } from './state/types';
 import IView from '../view/i_view';
 
 export default class Store implements IStore {
-  private state: State
+  private state: State;
 
   constructor(private readonly view: IView) {}
 
-  setCars = (cars: Car[]): void => {
+  setCars = (cars: CarType[]): void => {
     this.state = {
       ...this.state,
-      cars: cars
-    }
+      cars,
+    };
     console.log(this.state);
+    
+    this.showCars();
   };
 
-  private showCars = (cars: Car[]): void => {
-    this.view
+  setCar = (car: CarType): void => {
+    this.state = {
+      ...this.state,
+      cars: [...this.state.cars, car]
+    }
+    this.view.showCar(car);
+  }
+
+  private showCars = (): void => {
+    this.view.showCars(this.state.cars);
+  };
+
+  private showCar = (car: CarType): void => {
+    this.view.showCar(car);
   }
 }

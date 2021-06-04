@@ -8,21 +8,22 @@ module.exports = (env) => {
 
   const plugins = [
     new HtmlWebpackPlugin({
-      title: 'Async Race'
+      title: 'Async Race',
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
   ];
 
   let sourceMap = 'source-map';
 
   if (mode === 'production') {
-    plugins.push(new ESLintPlugin({
-      context: "./src",
-      extensions: ['ts']
-    }));
+    plugins.push(
+      new ESLintPlugin({
+        context: './src',
+        extensions: ['ts'],
+      })
+    );
     sourceMap = 'eval';
   }
-
 
   return {
     entry: './src/index.ts',
@@ -38,38 +39,36 @@ module.exports = (env) => {
     },
     resolve: {
       extensions: ['.ts', '.js'],
+      alias: {
+        '@store': './store',
+        '@controller': './controller',
+        '@view': './view',
+      },
     },
     module: {
       rules: [
         {
           test: /\.css$/i,
-          use: [
-            'style-loader',
-             'css-loader'
-          ],
+          use: ['style-loader', 'css-loader'],
         },
         {
           test: /\.s[ac]ss$/i,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'sass-loader',
-          ]
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'assets/images/[hash][ext]'
-          }
+            filename: 'assets/images/[hash][ext]',
+          },
         },
         {
           test: /\.ts$/i,
           use: 'ts-loader',
-          exclude: /node_modules/
-        }
-      ]
+          exclude: /node_modules/,
+        },
+      ],
     },
-    plugins: plugins
-  }
-}
+    plugins: plugins,
+  };
+};

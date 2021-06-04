@@ -7,5 +7,12 @@
     "sourceMap": true,
     "removeComments": true,
     "rootDir": ".",
-  }
+    "baseUrl": "src",
+    "paths": {
+      "@store/*": ["store/*"],
+      "@controller/*": ["controller/*"],
+      "@view/*": ["view/*"],
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", ".eslintrc.js"]
 }
