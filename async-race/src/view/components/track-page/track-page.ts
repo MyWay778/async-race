@@ -1,4 +1,4 @@
-import { CarType } from '@store/state/types';
+import { CarIdType, CarType } from '@store/state/types';
 import Panel from './panel/panel';
 import './track-page.scss';
 import BaseComponent from '../shared/base-component';

@@ -12,7 +12,11 @@
 .car-track-car {
   flex-grow: 1;
   margin: 0;
+  position: relative;
 }
 .car-track-car__image {
+  position: absolute;
+  left: 0;
   transform: translateX(0);
+  will-change: left;
 }

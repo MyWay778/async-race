@@ -4,4 +4,4 @@ export type CarType = {
   id: number
 }
 
-// export type CarIdType = number;
+export type CarIdType = number;

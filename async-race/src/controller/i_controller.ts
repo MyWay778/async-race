@@ -1,4 +1,5 @@
 import { CarType } from '@store/state/types';
+import ICar from '@view/components/track-page/car/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 
 export default interface IController {
@@ -7,4 +8,5 @@ export default interface IController {
   removeCar: (carId: number) => void;
   selectUpdateCar: (car: CarType) => void;
   updateCar: (car: CarInputType) => void;
+  startCar: (car: ICar) => void;
 }

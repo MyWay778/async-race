@@ -1,6 +1,7 @@
-import { CarType } from '@store/state/types';
+import { CarIdType, CarType } from '@store/state/types';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import IApi from './i_api';
+import { DriveModeStatusType, DriveSuccessType, EngineStatusType, MovementCharacteristicsType } from './types';
 
 export default class Api implements IApi {
   constructor(private readonly baseUrl: string) {}
@@ -37,4 +38,16 @@ export default class Api implements IApi {
         }),
       })
     ).json();
+
+  engine = async (
+    carId: CarIdType,
+    status: EngineStatusType
+  ): Promise<MovementCharacteristicsType> =>
+    (await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`)).json();
+
+  driveMode = async (
+    carId: CarIdType,
+    status: DriveModeStatusType
+  ): Promise<DriveSuccessType> => 
+  (await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`)).json();
 }

@@ -1,4 +1,6 @@
 import inputState from '@view/components/track-page/panel/constants';
+import { MovementCharacteristicsType } from 'api/types';
+import ICar from '@view/components/track-page/car/i_car';
 import { State } from './state/i_state';
 import IStore from './i_store';
 import { CarType } from './state/types';
@@ -49,14 +51,25 @@ export default class Store implements IStore {
   };
 
   getUpdatingCar = (): CarType => this.state?.updatingCar;
-  
+
   updateCar = (updatedCar: CarType): void => {
-    const updatedCarIndex = this.state.cars.findIndex(car => updatedCar.id === car.id);
+    const updatedCarIndex = this.state.cars.findIndex(
+      (car) => updatedCar.id === car.id
+    );
     this.state.cars[updatedCarIndex] = updatedCar;
     this.showCars();
     this.disableUpdateCarInput();
   };
 
+  startCar = (car: ICar, movementData: MovementCharacteristicsType): void => {
+    const movementTime = Math.round(movementData.distance / movementData.velocity);
+    car.start(movementTime);
+  };
+
+  stopCar = (car: ICar): void => {
+    car.stop();
+  };
+  
   private showCars = (): void => {
     this.view.showCars(this.state.cars);
   };

@@ -26,6 +26,7 @@ export default class View implements IView {
       removeCarHandler: this.removeCarHandler,
       selectCarHandler: this.selectCarHandler,
       updateCarHandler: this.updateCarHandler,
+      startCarHandler: this.controller.startCar,
     });
     this.trackPage.render(this.root);
   };
