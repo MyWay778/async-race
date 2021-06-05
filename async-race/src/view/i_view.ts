@@ -1,5 +1,5 @@
 import IController from '@controller/i_controller';
-import { CarIdType, CarType } from '@store/state/types';
+import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
 
 

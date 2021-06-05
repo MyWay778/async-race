@@ -11,4 +11,5 @@ export default interface IStore {
   disableUpdateCarInput: () => void;
   startCar: (car: ICar, movementData: MovementCharacteristicsType) => void;
   stopCar: (car: ICar) => void;
+  bringBackCar: (car: ICar, movementData: MovementCharacteristicsType) => void;
 }

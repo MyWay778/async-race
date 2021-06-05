@@ -1,4 +1,4 @@
-import { CarIdType, CarType } from '@store/state/types';
+import { CarType } from '@store/state/types';
 import Panel from './panel/panel';
 import './track-page.scss';
 import BaseComponent from '../shared/base-component';
@@ -70,7 +70,6 @@ class TrackPage extends BaseComponent implements ITrackPage {
   }
 
   showCar = (car: CarType): void => {
-    console.log('track-page', car);
     const newCar = new Car(car.id, car.name, car.color, this.handlers);
     this.carList.append(newCar.element);
   };

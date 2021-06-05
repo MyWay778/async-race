@@ -3,4 +3,5 @@ export default interface ICar {
   init: () => void;
   start: (movementTime: number) => void;
   stop: () => void;
+  comeBack: () => void;
 }

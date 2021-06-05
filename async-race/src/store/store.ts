@@ -62,14 +62,26 @@ export default class Store implements IStore {
   };
 
   startCar = (car: ICar, movementData: MovementCharacteristicsType): void => {
-    const movementTime = Math.round(movementData.distance / movementData.velocity);
+    const movementTime = Math.round(
+      movementData.distance / movementData.velocity
+    );
     car.start(movementTime);
   };
 
   stopCar = (car: ICar): void => {
     car.stop();
   };
-  
+
+  bringBackCar = (
+    car: ICar,
+    movementData: MovementCharacteristicsType
+  ): void => {
+    if (movementData.velocity === 0) {
+      car.stop();
+      car.comeBack();
+    }
+  };
+
   private showCars = (): void => {
     this.view.showCars(this.state.cars);
   };

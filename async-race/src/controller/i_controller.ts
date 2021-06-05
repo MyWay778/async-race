@@ -9,4 +9,5 @@ export default interface IController {
   selectUpdateCar: (car: CarType) => void;
   updateCar: (car: CarInputType) => void;
   startCar: (car: ICar) => void;
+  stopCar: (car: ICar) => void;
 }

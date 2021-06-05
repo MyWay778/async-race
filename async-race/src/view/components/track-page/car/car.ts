@@ -60,8 +60,16 @@ class Car extends BaseComponent implements ICar {
   };
 
   stop = (): void => {
-    cancelAnimationFrame(this.requestAnimationId);
+    if (this.requestAnimationId) {
+      cancelAnimationFrame(this.requestAnimationId);
+      this.requestAnimationId = undefined;
+    }  
   };
+
+  comeBack = (): void => {
+    this.stop();
+    this.carImage.style.left = '0%';
+  }
 
   private createCarTrack() {
     const carTrack = document.createElement('div');
@@ -80,14 +88,12 @@ class Car extends BaseComponent implements ICar {
     const stopBtn = document.createElement('button');
     stopBtn.classList.add('car-track-engine-control__btn');
     stopBtn.textContent = 'B';
-
+    stopBtn.onclick = (): void => {
+      this.handlers.stopCarHandler(this);
+    }
+ 
     this.car = document.createElement('figure');
     this.car.classList.add('car-track-car');
-
-    // const carImage = `
-    //   <svg height="22px" width="70px" style="fill: ${this.color || '#fff'}" viewbox="0 0 99 37" xmlns="http://www.w3.org/2000/svg">
-    //     <use xlink:href="${image}#car"></use>
-    //   </svg>`
 
     this.carImage = createSvgCar(
       carSvgImage.className,

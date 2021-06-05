@@ -1,4 +1,4 @@
-import { CarIdType, CarType } from '@store/state/types';
+import { CarType } from '@store/state/types';
 import ICar from '@view/components/track-page/car/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import Api from '../api/api';
@@ -52,7 +52,7 @@ export default class Controller implements IController {
       const response = await this.api.updateCar({
         id: updatingCarFromStore.id,
         name: car.name,
-        color: car.color
+        color: car.color,
       });
 
       this.store.updateCar(response);
@@ -70,6 +70,10 @@ export default class Controller implements IController {
     } catch (e) {
       this.store.stopCar(car);
     }
-    
-  }
+  };
+
+  stopCar = async (car: ICar): Promise<void> => {
+    const movementData = await this.api.engine(car.id, 'stopped');
+    this.store.bringBackCar(car, movementData);
+  };
 }
