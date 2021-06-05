@@ -2,6 +2,7 @@ import { CarType } from '@store/state/types';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import Api from '../api/api';
 import IStore from '../store/i_store';
+import shallowCarEqual from './helpers/shallowCarEqual';
 
 import IController from './i_controller';
 
@@ -34,9 +35,29 @@ export default class Controller implements IController {
 
   removeCar = async (carId: number): Promise<void> => {
     const response = await this.api.deleteCar(carId);
-    if(response.status === 200) {
+    if (response.status === 200) {
       this.showCars();
     }
-  }
-  
+  };
+
+  selectUpdateCar = (car: CarType): void => {
+    this.store.setUpdatingCar(car);
+  };
+
+  updateCar = async (car: CarInputType): Promise<void> => {
+    const updatingCarFromStore = this.store.getUpdatingCar();
+
+    if (!shallowCarEqual(updatingCarFromStore, car)) {
+      const response = await this.api.updateCar({
+        id: updatingCarFromStore.id,
+        name: car.name,
+        color: car.color
+      });
+
+      this.store.updateCar(response);
+    } else {
+      this.store.disableUpdateCarInput();
+    }
+
+  };
 }

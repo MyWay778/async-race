@@ -1,13 +1,14 @@
 import BaseComponent from '../../../shared/base-component';
-import { CreateCarHandlerType, CarInputType } from './types';
+import ICarInput from './i_car-input';
+import { CreateCarHandlerType, CarInputType, CarInputValuesType } from './types';
 
-class CarInput extends BaseComponent {
+class CarInput extends BaseComponent implements ICarInput {
   readonly element: HTMLDivElement;
   private readonly btn: HTMLButtonElement;
   private readonly nameInput: HTMLInputElement;
   private readonly colorInput: HTMLInputElement;
 
-  constructor(btnText: string) {
+  constructor(btnText: string, private isDisabled = false) {
     super('div');
     this.element.classList.add('car-input');
 
@@ -22,6 +23,8 @@ class CarInput extends BaseComponent {
     this.btn.classList.add('car-input__button');
     this.btn.textContent = btnText;
 
+    this.checkDisabled();
+
     this.element.append(this.nameInput, this.colorInput, this.btn);
   }
 
@@ -34,6 +37,28 @@ class CarInput extends BaseComponent {
       handler(newCar);
     };
   }
+
+  toggleDisabled = (isDisabled: boolean): void => {
+    this.isDisabled = isDisabled;
+    this.checkDisabled();
+  };
+
+  setValues = (values: CarInputValuesType): void => {
+    this.nameInput.value = values.name;
+    this.colorInput.value = values.color;
+  }
+
+  private checkDisabled = () => {
+    if (this.isDisabled) {
+      this.nameInput.disabled = true;
+      this.colorInput.disabled = true;
+      this.btn.disabled = true;
+    } else {
+      this.nameInput.disabled = false;
+      this.colorInput.disabled = false;
+      this.btn.disabled = false;
+    }
+  };
 }
 
 export default CarInput;

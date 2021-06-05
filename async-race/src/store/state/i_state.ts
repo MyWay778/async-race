@@ -1,3 +1,6 @@
+import { CarType } from './types';
+
 export type State = {
-  cars: Array<any>;
-}
+  cars: Array<CarType>;
+  updatingCar?: CarType;
+};

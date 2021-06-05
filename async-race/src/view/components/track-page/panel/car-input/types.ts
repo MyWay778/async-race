@@ -4,3 +4,7 @@ export type CarInputType = {
 }
 
 export type CreateCarHandlerType = (car: CarInputType) => void;
+export type CarInputValuesType = {
+  name: string,
+  color: string
+}

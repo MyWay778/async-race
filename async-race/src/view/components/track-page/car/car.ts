@@ -84,6 +84,10 @@ class Car extends BaseComponent implements ICar {
     const selectBtn = document.createElement('button');
     selectBtn.classList.add('car-panel__btn');
     selectBtn.textContent = 'Select';
+    selectBtn.onclick = (e: MouseEvent) => {
+      e.stopPropagation(); // To prevent the root listener from capturing the event
+      this.handlers.selectCarHandler({id: this.id, name: this.name, color: this.color});
+    }
 
     const removeBtn = document.createElement('button');
     removeBtn.classList.add('car-panel__btn');

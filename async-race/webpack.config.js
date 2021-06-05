@@ -40,9 +40,9 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.js'],
       alias: {
+        '@view': '../view',
         '@store': './store',
         '@controller': './controller',
-        '@view': './view',
       },
     },
     module: {

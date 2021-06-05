@@ -9,9 +9,9 @@
     "rootDir": ".",
     "baseUrl": "src",
     "paths": {
+      "@view/*": ["view/*"],
       "@store/*": ["store/*"],
       "@controller/*": ["controller/*"],
-      "@view/*": ["view/*"],
     }
   },
   "include": ["src/**/*.ts", "src/**/*.js", ".eslintrc.js"]

@@ -23,4 +23,18 @@ export default class Api implements IApi {
     fetch(`${this.baseUrl}garage/${carId}`, {
       method: 'DELETE',
     });
+
+  updateCar = async (car: CarType): Promise<CarType> =>
+    (
+      await fetch(`${this.baseUrl}garage/${car.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: car.name,
+          color: car.color,
+        }),
+      })
+    ).json();
 }

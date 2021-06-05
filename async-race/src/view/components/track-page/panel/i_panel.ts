@@ -1,5 +1,7 @@
-import { CreateCarHandlerType } from './car-input/types';
+import { CarType } from '@store/state/types';
 
 export default interface IPanel {
-  setCreateBtnHandler: (handler: CreateCarHandlerType) => void;
+  element: HTMLElement;
+  toggleDisableUpdateInput: (isDisabled: boolean) => void;
+  setUpdateInputValues: (car: CarType) => void;
 }

@@ -3,3 +3,5 @@ export type CarType = {
   color: string,
   id: number
 }
+
+// export type CarIdType = number;
