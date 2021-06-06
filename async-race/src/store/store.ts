@@ -1,15 +1,15 @@
 import inputState from '@view/components/track-page/panel/constants';
 import { MovementCharacteristicsType } from 'api/types';
-import ICar from '@view/components/track-page/car/i_car';
+import ICar from '@view/components/track-page/car/types/i_car';
 import { State } from './state/i_state';
 import IStore from './i_store';
-import { CarType } from './state/types';
+import { CarType, WinnerType } from './state/types';
 import IView from '../view/i_view';
 import disableUpdateCarInputHandler from './helpers/disable-update-car-input-handler';
 import noId from './constants';
 
 export default class Store implements IStore {
-  private state: State;
+  state: State;
 
   constructor(private readonly view: IView) {}
 
@@ -81,6 +81,18 @@ export default class Store implements IStore {
       car.comeBack();
     }
   };
+
+  checkWinner = (): boolean => !!this.state.winner;
+
+  setWinner = (winner: WinnerType): void => {
+    this.state.winner = winner;
+    console.log(this.state.winner);
+  };
+
+  startRace = (): void => {
+    this.view.startRace();
+    this.state.race = true;
+  }
 
   private showCars = (): void => {
     this.view.showCars(this.state.cars);

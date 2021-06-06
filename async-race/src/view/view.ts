@@ -3,7 +3,6 @@ import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
 import { Header, TrackPage } from './components/index';
 import ITrackPage from './components/track-page/i_track-page';
-import { CarInputType } from './components/track-page/panel/car-input/types';
 import IView from './i_view';
 
 export { IView };
@@ -22,12 +21,14 @@ export default class View implements IView {
     header.render(this.root);
 
     this.trackPage = new TrackPage({
-      createCarHandler: this.createCarHandler,
-      removeCarHandler: this.removeCarHandler,
-      selectCarHandler: this.selectCarHandler,
-      updateCarHandler: this.updateCarHandler,
+      createCarHandler: this.controller.createCar,
+      removeCarHandler: this.controller.removeCar,
+      selectCarHandler: this.controller.selectUpdateCar,
+      updateCarHandler: this.controller.updateCar,
       startCarHandler: this.controller.startCar,
       stopCarHandler: this.controller.stopCar,
+      finishedCarHandler: this.controller.finishCar,
+      startRaceHandler: this.controller.startRace
     });
     this.trackPage.render(this.root);
   };
@@ -61,19 +62,7 @@ export default class View implements IView {
     this.rootEventHandler = undefined;
   };
 
-  private createCarHandler = (car: CarType): void => {
-    this.controller.createCar(car);
-  };
-
-  private removeCarHandler = (carId: number): void => {
-    this.controller.removeCar(carId);
-  };
-
-  private selectCarHandler = (car: CarType): void => {
-    this.controller.selectUpdateCar(car);
-  };
-
-  private updateCarHandler = (car: CarInputType): void => {
-    this.controller.updateCar(car);
-  };
+  startRace = (): void => {
+    this.trackPage.startAllCars();
+  }
 }

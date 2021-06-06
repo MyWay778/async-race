@@ -1,23 +1,16 @@
-import BaseComponent from '../../shared/base-component';
+import BaseComponent from '../../shared/base-component/base-component';
 import './car.scss';
-import ICar from './i_car';
-import image from '../../../../assets/images/sedan-car.svg';
 import createSvgCar from './helpers';
-import { CarHandlersType } from './types';
+import carSvgImage from './constants';
+import { CarHandlersType } from './types/handlers';
+import ICar from './types/i_car';
 
-const carSvgImage = {
-  className: 'car-track-car__image',
-  width: 70,
-  height: 22,
-  viewBox: '0 0 99 37',
-  imageHref: image,
-  imageId: 'car',
-};
-
-class Car extends BaseComponent implements ICar {
+export default class Car extends BaseComponent implements ICar {
   private car: HTMLElement;
   private carImage: SVGSVGElement;
   private requestAnimationId: number;
+  private startBtn: HTMLButtonElement;
+  private stopBtn: HTMLButtonElement;
 
   constructor(
     readonly id: number,
@@ -27,7 +20,6 @@ class Car extends BaseComponent implements ICar {
   ) {
     super('li');
     this.element.classList.add('car');
-
     this.init();
   }
 
@@ -37,39 +29,43 @@ class Car extends BaseComponent implements ICar {
   };
 
   start = (movementTime: number): void => {
-    const animateCar = (duration: number) => {
-      const start = performance.now();
+    const start = performance.now();
+    const animate = (time: number): void => {
+      let timeFraction = (time - start) / movementTime;
+      if (timeFraction > 1) {
+        timeFraction = 1;
+      }
 
-      const animate = (time: number): void => {
-        let timeFraction = (time - start) / duration;
-        if (timeFraction > 1) {
-          timeFraction = 1;
-        }
+      const progress = timeFraction;
+      this.carImage.style.left = `${progress * 100}%`;
 
-        const progress = timeFraction;
-        this.carImage.style.left = `${progress * 100}%`;
-
-        if (timeFraction < 1) {
-          this.requestAnimationId =  requestAnimationFrame(animate);
-        }
-      };
-      this.requestAnimationId = requestAnimationFrame(animate);
+      if (timeFraction < 1) {
+        this.requestAnimationId = requestAnimationFrame(animate);
+      } else {
+        this.handlers.finishedCarHandler(this.id, movementTime);
+      }
     };
-
-    animateCar(movementTime);
+    this.requestAnimationId = requestAnimationFrame(animate);
   };
 
   stop = (): void => {
     if (this.requestAnimationId) {
       cancelAnimationFrame(this.requestAnimationId);
       this.requestAnimationId = undefined;
-    }  
+    }
   };
 
   comeBack = (): void => {
     this.stop();
     this.carImage.style.left = '0%';
-  }
+  };
+
+  startHandler = (): void => {
+    this.startBtn.disabled = true;
+    this.stopBtn.disabled = false;
+
+    this.handlers.startCarHandler(this);
+  };
 
   private createCarTrack() {
     const carTrack = document.createElement('div');
@@ -78,20 +74,22 @@ class Car extends BaseComponent implements ICar {
     const startStopControl = document.createElement('div');
     startStopControl.classList.add('car-track-engine-control');
 
-    const startBtn = document.createElement('button');
-    startBtn.classList.add('car-track-engine-control__btn');
-    startBtn.textContent = 'A';
-    startBtn.onclick = (): void => {
-      this.handlers.startCarHandler(this);
+    this.startBtn = document.createElement('button');
+    this.startBtn.classList.add('car-track-engine-control__btn');
+    this.startBtn.textContent = 'A';
+    this.startBtn.onclick = this.startHandler;
+
+    this.stopBtn = document.createElement('button');
+    this.stopBtn.classList.add('car-track-engine-control__btn');
+    this.stopBtn.textContent = 'B';
+    this.stopBtn.disabled = true;
+    this.stopBtn.onclick = (): void => {
+      this.stopBtn.disabled = true;
+      this.startBtn.disabled = false;
+
+      this.handlers.stopCarHandler(this);
     };
 
-    const stopBtn = document.createElement('button');
-    stopBtn.classList.add('car-track-engine-control__btn');
-    stopBtn.textContent = 'B';
-    stopBtn.onclick = (): void => {
-      this.handlers.stopCarHandler(this);
-    }
- 
     this.car = document.createElement('figure');
     this.car.classList.add('car-track-car');
 
@@ -109,7 +107,7 @@ class Car extends BaseComponent implements ICar {
     flag.classList.add('car-track__finish');
 
     this.car.append(this.carImage);
-    startStopControl.append(startBtn, stopBtn);
+    startStopControl.append(this.startBtn, this.stopBtn);
     carTrack.append(startStopControl, this.car, flag);
     this.element.append(carTrack);
   }
@@ -149,5 +147,3 @@ class Car extends BaseComponent implements ICar {
     this.element.append(header);
   }
 }
-
-export default Car;

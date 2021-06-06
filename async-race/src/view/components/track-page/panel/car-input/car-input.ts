@@ -1,4 +1,4 @@
-import BaseComponent from '../../../shared/base-component';
+import BaseComponent from '../../../shared/base-component/base-component';
 import ICarInput from './i_car-input';
 import { CreateCarHandlerType, CarInputType, CarInputValuesType } from './types';
 

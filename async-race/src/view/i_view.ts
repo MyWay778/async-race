@@ -11,4 +11,5 @@ export default interface IView {
   setUpdateInputValues: (car: CarType) => void;
   setEventListenerToRoot: (handler: MouseEventHandler, options?: AddEventListenerOptions) => void;
   removeEventListenerFromRoot: () => void;
+  startRace: () => void;
 }

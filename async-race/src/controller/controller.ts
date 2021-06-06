@@ -1,5 +1,5 @@
-import { CarType } from '@store/state/types';
-import ICar from '@view/components/track-page/car/i_car';
+import { CarIdType, CarType, WinnerType } from '@store/state/types';
+import ICar from '@view/components/track-page/car/types/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import Api from '../api/api';
 import IStore from '../store/i_store';
@@ -62,7 +62,7 @@ export default class Controller implements IController {
   };
 
   startCar = async (car: ICar): Promise<void> => {
-    const movementData = await this.api.engine(car.id, 'started');
+      const movementData = await this.api.engine(car.id, 'started');
     this.store.startCar(car, movementData);
 
     try {
@@ -76,4 +76,34 @@ export default class Controller implements IController {
     const movementData = await this.api.engine(car.id, 'stopped');
     this.store.bringBackCar(car, movementData);
   };
+
+  finishCar = async (carId: CarIdType, movementTime: number): Promise<void> => {
+    if (!this.store.state.race || this.store.state.winner) {
+      return;
+    }
+    const time = Number((movementTime / 1000).toFixed(2));
+    const winner = await this.api.getWinner(carId);
+    if (winner.id) {
+      winner.wins += 1;
+      if (time < winner.time) {
+        winner.time = time;
+      }
+      this.store.setWinner(winner);
+      this.api.updateWinner(winner);
+    } else {
+      const newWinner: WinnerType = {
+        id: carId,
+        wins: 1,
+        time,
+      };
+      this.api.createWinner(newWinner);
+      this.store.setWinner(newWinner);
+    }
+    this.store.state.race = false;
+    this.store.state.winner = undefined; 
+  };
+
+  startRace = ():void => {
+    this.store.startRace();
+  }
 }
