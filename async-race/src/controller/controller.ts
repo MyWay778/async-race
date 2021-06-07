@@ -62,9 +62,8 @@ export default class Controller implements IController {
   };
 
   startCar = async (car: ICar): Promise<void> => {
-      const movementData = await this.api.engine(car.id, 'started');
+    const movementData = await this.api.engine(car.id, 'started');
     this.store.startCar(car, movementData);
-
     try {
       await this.api.driveMode(car.id, 'drive');
     } catch (e) {
@@ -100,10 +99,20 @@ export default class Controller implements IController {
       this.store.setWinner(newWinner);
     }
     this.store.state.race = false;
-    this.store.state.winner = undefined; 
+    this.store.state.winner = undefined;
   };
 
-  startRace = ():void => {
+  startRace = (cars: ICar[]): void => {
+    cars.forEach((car) => car.startHandler());
     this.store.startRace();
-  }
+  };
+
+  resetRace = (cars: ICar[]): void => {
+    this.store.resetRace();
+    const allCarsFinished = cars.map((car) => car.stopHandler());
+    console.log(allCarsFinished);
+    Promise.allSettled(allCarsFinished).then(() => {
+      this.store.allCarsAreDropped();
+    });
+  };
 }

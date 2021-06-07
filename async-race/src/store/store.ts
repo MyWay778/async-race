@@ -1,4 +1,4 @@
-import inputState from '@view/components/track-page/panel/constants';
+import elementStatus from '@view/components/track-page/panel/constants';
 import { MovementCharacteristicsType } from 'api/types';
 import ICar from '@view/components/track-page/car/types/i_car';
 import { State } from './state/i_state';
@@ -31,7 +31,7 @@ export default class Store implements IStore {
 
   setUpdatingCar = (car: CarType): void => {
     this.state.updatingCar = car;
-    this.view.toggleDisableUpdateBtn(inputState.undisabled);
+    this.view.toggleDisableUpdateBtn(elementStatus.undisabled);
     this.view.setUpdateInputValues(car);
 
     const carUpdateInputDisabling = (): void => {
@@ -46,7 +46,7 @@ export default class Store implements IStore {
 
   disableUpdateCarInput = (): void => {
     this.view.setUpdateInputValues({ id: noId, name: '', color: '' });
-    this.view.toggleDisableUpdateBtn(inputState.disabled);
+    this.view.toggleDisableUpdateBtn(elementStatus.disabled);
     this.state.updatingCar = undefined;
   };
 
@@ -90,8 +90,13 @@ export default class Store implements IStore {
   };
 
   startRace = (): void => {
-    this.view.startRace();
+    this.view.toggleDisableRaceBtn(elementStatus.disabled);
+    // this.view.startRace();
     this.state.race = true;
+  }
+
+  resetRace = (): void => {
+    this.view.toggleDisableResetBtn(elementStatus.disabled);
   }
 
   private showCars = (): void => {
@@ -101,4 +106,9 @@ export default class Store implements IStore {
   private showCar = (car: CarType): void => {
     this.view.showCar(car);
   };
+
+  allCarsAreDropped = (): void => {
+    this.view.toggleDisableResetBtn(elementStatus.undisabled);
+    this.view.toggleDisableRaceBtn(elementStatus.undisabled);
+  }
 }

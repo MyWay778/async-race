@@ -5,4 +5,5 @@ export default interface ICar {
   stop: () => void;
   comeBack: () => void;
   startHandler: () => void;
+  stopHandler: () => void;
 }

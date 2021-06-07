@@ -12,6 +12,7 @@ class Panel extends BaseComponent implements IPanel {
   private readonly create: CarInput;
   private readonly update: CarInput;
   private readonly raceBtn: Button;
+  private readonly resetBtn: Button;
 
   constructor(handlers: PanelHandlersType) {
     super('section');
@@ -31,11 +32,22 @@ class Panel extends BaseComponent implements IPanel {
 
     this.raceBtn = new Button('Race', ['garage-panel__btn', 'async-race_btn'], handlers.startRaceHandler);
     this.raceBtn.render(this.element);
+
+    this.resetBtn = new Button('Reset', ['garage-panel__btn', 'async-race_btn'], handlers.resetRaceHandler);
+    this.resetBtn.render(this.element);
   }
 
   toggleDisableUpdateInput = (isDisabled: boolean): void => {
     this.update.toggleDisabled(isDisabled);
   };
+
+  toggleDisableRaceBtn = (isDisabled: boolean): void => {
+    this.raceBtn.toggleDisabling(isDisabled);
+  }
+
+  toggleDisableResetBtn = (isDisabled: boolean): void => {
+    this.resetBtn.toggleDisabling(isDisabled);
+  }
 
   setUpdateInputValues = (car: CarType): void => {
     this.update.setValues(car);

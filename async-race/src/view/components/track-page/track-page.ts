@@ -24,7 +24,8 @@ class TrackPage extends BaseComponent implements ITrackPage {
     this.panel = new Panel({
       createCarHandler: this.handlers.createCarHandler,
       updateCarHandler: this.handlers.updateCarHandler,
-      startRaceHandler: this.handlers.startRaceHandler,
+      startRaceHandler: this.startRaceHandler,
+      resetRaceHandler: this.resetRaceHandler,
     });
 
     const trackSection = document.createElement('section');
@@ -48,6 +49,7 @@ class TrackPage extends BaseComponent implements ITrackPage {
 
   showCars = (cars: CarType[]): void => {
     if (cars.length === 0) {
+      this.carList.innerHTML = '';
       const messageLine = document.createElement('li');
       messageLine.classList.add('car-list__message');
       messageLine.textContent = 'The Garage is empty.';
@@ -64,17 +66,37 @@ class TrackPage extends BaseComponent implements ITrackPage {
     });
   };
 
+  startRaceHandler = (): void => {
+    this.handlers.startRaceHandler(this.garage);
+  }
+
+  resetRaceHandler = (): void => {
+    this.handlers.resetRaceHandler(this.garage);
+  }
+
   startAllCars = (): void => {
     this.garage.forEach(car => car.startHandler());
+  };
+
+  resetAllCars = (): void => {
+    this.garage.forEach(car => car.stopHandler());
   };
 
   toggleDisableUpdateBtn = (isDisabled: boolean): void => {
     this.panel.toggleDisableUpdateInput(isDisabled);
   };
 
+  toggleDisableRaceBtn = (isDisabled: boolean): void => {
+    this.panel.toggleDisableRaceBtn(isDisabled);
+  };
+
+  toggleDisableResetBtn = (isDisabled: boolean): void => {
+    this.panel.toggleDisableResetBtn(isDisabled);
+  };
+
   setUpdateInputValues = (car: CarType): void => {
     this.panel.setUpdateInputValues(car);
-  }
+  };
 
   showCar = (car: CarType): void => {
     const newCar = new Car(car.id, car.name, car.color, this.handlers);

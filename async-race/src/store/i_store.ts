@@ -17,4 +17,6 @@ export default interface IStore {
   checkWinner: () => boolean;
   setWinner: (winner: WinnerType) => void;
   startRace: () => void;
+  resetRace: () => void;
+  allCarsAreDropped: () => void;
 }

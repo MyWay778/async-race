@@ -58,58 +58,18 @@ export default class Car extends BaseComponent implements ICar {
   comeBack = (): void => {
     this.stop();
     this.carImage.style.left = '0%';
+    this.startBtn.disabled = false;
   };
 
   startHandler = (): void => {
     this.startBtn.disabled = true;
     this.stopBtn.disabled = false;
-
-    this.handlers.startCarHandler(this);
+    return this.handlers.startCarHandler(this);
   };
 
-  private createCarTrack() {
-    const carTrack = document.createElement('div');
-    carTrack.classList.add('car-track');
-
-    const startStopControl = document.createElement('div');
-    startStopControl.classList.add('car-track-engine-control');
-
-    this.startBtn = document.createElement('button');
-    this.startBtn.classList.add('car-track-engine-control__btn');
-    this.startBtn.textContent = 'A';
-    this.startBtn.onclick = this.startHandler;
-
-    this.stopBtn = document.createElement('button');
-    this.stopBtn.classList.add('car-track-engine-control__btn');
-    this.stopBtn.textContent = 'B';
+  stopHandler = (): void => {
     this.stopBtn.disabled = true;
-    this.stopBtn.onclick = (): void => {
-      this.stopBtn.disabled = true;
-      this.startBtn.disabled = false;
-
-      this.handlers.stopCarHandler(this);
-    };
-
-    this.car = document.createElement('figure');
-    this.car.classList.add('car-track-car');
-
-    this.carImage = createSvgCar(
-      carSvgImage.className,
-      carSvgImage.width,
-      carSvgImage.height,
-      carSvgImage.viewBox,
-      carSvgImage.imageHref,
-      carSvgImage.imageId
-    );
-    this.carImage.style.fill = this.color;
-
-    const flag = document.createElement('figure');
-    flag.classList.add('car-track__finish');
-
-    this.car.append(this.carImage);
-    startStopControl.append(this.startBtn, this.stopBtn);
-    carTrack.append(startStopControl, this.car, flag);
-    this.element.append(carTrack);
+    return this.handlers.stopCarHandler(this);
   }
 
   private createCarHeader() {
@@ -145,5 +105,45 @@ export default class Car extends BaseComponent implements ICar {
     carPanel.append(selectBtn, removeBtn);
     header.append(carPanel, carName);
     this.element.append(header);
+  }
+
+  private createCarTrack() {
+    const carTrack = document.createElement('div');
+    carTrack.classList.add('car-track');
+
+    const startStopControl = document.createElement('div');
+    startStopControl.classList.add('car-track-engine-control');
+
+    this.startBtn = document.createElement('button');
+    this.startBtn.classList.add('car-track-engine-control__btn');
+    this.startBtn.textContent = 'A';
+    this.startBtn.onclick = this.startHandler;
+
+    this.stopBtn = document.createElement('button');
+    this.stopBtn.classList.add('car-track-engine-control__btn');
+    this.stopBtn.textContent = 'B';
+    this.stopBtn.disabled = true;
+    this.stopBtn.onclick = this.stopHandler;
+
+    this.car = document.createElement('figure');
+    this.car.classList.add('car-track-car');
+
+    this.carImage = createSvgCar(
+      carSvgImage.className,
+      carSvgImage.width,
+      carSvgImage.height,
+      carSvgImage.viewBox,
+      carSvgImage.imageHref,
+      carSvgImage.imageId
+    );
+    this.carImage.style.fill = this.color;
+
+    const flag = document.createElement('figure');
+    flag.classList.add('car-track__finish');
+
+    this.car.append(this.carImage);
+    startStopControl.append(this.startBtn, this.stopBtn);
+    carTrack.append(startStopControl, this.car, flag);
+    this.element.append(carTrack);
   }
 }

@@ -20,7 +20,7 @@ export default class View implements IView {
     const header = new Header();
     header.render(this.root);
 
-    this.trackPage = new TrackPage({
+    const trackPageHandlers = {
       createCarHandler: this.controller.createCar,
       removeCarHandler: this.controller.removeCar,
       selectCarHandler: this.controller.selectUpdateCar,
@@ -28,8 +28,11 @@ export default class View implements IView {
       startCarHandler: this.controller.startCar,
       stopCarHandler: this.controller.stopCar,
       finishedCarHandler: this.controller.finishCar,
-      startRaceHandler: this.controller.startRace
-    });
+      startRaceHandler: this.controller.startRace,
+      resetRaceHandler: this.controller.resetRace,
+    };
+
+    this.trackPage = new TrackPage(trackPageHandlers);
     this.trackPage.render(this.root);
   };
 
@@ -44,6 +47,14 @@ export default class View implements IView {
   toggleDisableUpdateBtn = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableUpdateBtn(isDisabled);
   };
+
+  toggleDisableRaceBtn = (isDisabled: boolean): void => {
+    this.trackPage.toggleDisableRaceBtn(isDisabled);
+  };
+
+  toggleDisableResetBtn = (isDisabled: boolean): void => {
+    this.trackPage.toggleDisableResetBtn(isDisabled);
+  }
 
   setUpdateInputValues = (car: CarType): void => {
     this.trackPage.setUpdateInputValues(car);
@@ -64,5 +75,9 @@ export default class View implements IView {
 
   startRace = (): void => {
     this.trackPage.startAllCars();
+  };
+
+  resetRace = (): void => {
+    this.trackPage.resetAllCars();
   }
 }

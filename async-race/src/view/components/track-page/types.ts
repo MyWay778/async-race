@@ -6,6 +6,7 @@ import {
   StopCarHandlerType,
   UpdateCarHandlerType,
 } from './car/types/handlers';
+import ICar from './car/types/i_car';
 import { CreateCarHandlerType } from './panel/car-input/types';
 
 export type TrackPageHandlersType = {
@@ -16,5 +17,6 @@ export type TrackPageHandlersType = {
   startCarHandler: StartCarHandlerType;
   stopCarHandler: StopCarHandlerType;
   finishedCarHandler: FinishedCarHandler;
-  startRaceHandler: () => void;
+  startRaceHandler: (cars: ICar[]) => void;
+  resetRaceHandler: (cars: ICar[]) => void;
 };
