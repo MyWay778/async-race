@@ -3,6 +3,7 @@ import ICar from '@view/components/track-page/car/types/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import Api from '../api/api';
 import IStore from '../store/i_store';
+import carGenerator from './helpers/car-generator';
 import shallowCarEqual from './helpers/shallowCarEqual';
 
 import IController from './i_controller';
@@ -19,10 +20,10 @@ export default class Controller implements IController {
   }
 
   showCars = async (): Promise<void> => {
-    let cars: CarType[];
     try {
-      cars = await this.api.getCars();
-      this.store.setCars(cars);
+      const carsResponse = await this.api.getCars();
+      this.store.setCars(carsResponse.cars);
+      this.store.setCarsAmount(carsResponse.carsAmount);
     } catch (e) {
       console.log('Error ', e);
       this.store.setCars([]);
@@ -110,9 +111,18 @@ export default class Controller implements IController {
   resetRace = (cars: ICar[]): void => {
     this.store.resetRace();
     const allCarsFinished = cars.map((car) => car.stopHandler());
-    console.log(allCarsFinished);
     Promise.allSettled(allCarsFinished).then(() => {
       this.store.allCarsAreDropped();
+    });
+  };
+
+  generateCars = async (): Promise<void> => {
+    this.store.carsGeneration();
+    const cars = carGenerator();
+    const requests = cars.map((car) => this.api.createCar(car));
+    Promise.allSettled(requests).then(() => {
+      this.store.carsGeneration(false);
+      this.showCars();
     });
   };
 }

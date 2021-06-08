@@ -4,10 +4,11 @@ import {
   DriveSuccessType,
   EngineStatusType,
   MovementCharacteristicsType,
+  ResponseGerCarsType,
 } from './types';
 
 export default interface IApi {
-  getCars: () => Promise<CarType[]>;
+  getCars: (page: number, carLimit?: number) => Promise<ResponseGerCarsType>;
   createCar: (car: CarType) => Promise<CarType>;
   deleteCar: (carId: number) => Promise<Response>;
   engine: (

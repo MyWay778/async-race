@@ -7,4 +7,5 @@ export default interface IPanel {
   setUpdateInputValues: (car: CarType) => void;
   toggleDisableRaceBtn: ToggleDisablingBtnType;
   toggleDisableResetBtn: ToggleDisablingBtnType;
+  toggleDisableGenerateBtn: ToggleDisablingBtnType;
 }

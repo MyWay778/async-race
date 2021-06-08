@@ -13,6 +13,7 @@ class Panel extends BaseComponent implements IPanel {
   private readonly update: CarInput;
   private readonly raceBtn: Button;
   private readonly resetBtn: Button;
+  private readonly generateBtn: Button;
 
   constructor(handlers: PanelHandlersType) {
     super('section');
@@ -30,11 +31,26 @@ class Panel extends BaseComponent implements IPanel {
     this.update.element.dataset.type = 'update'; // To deactivate by clicking outside
     this.update.onclick = handlers.updateCarHandler;
 
-    this.raceBtn = new Button('Race', ['garage-panel__btn', 'async-race_btn'], handlers.startRaceHandler);
+    this.raceBtn = new Button(
+      'Race',
+      ['garage-panel__btn', 'async-race_btn'],
+      handlers.startRaceHandler
+    );
     this.raceBtn.render(this.element);
 
-    this.resetBtn = new Button('Reset', ['garage-panel__btn', 'async-race_btn'], handlers.resetRaceHandler);
+    this.resetBtn = new Button(
+      'Reset',
+      ['garage-panel__btn', 'async-race_btn'],
+      handlers.resetRaceHandler
+    );
     this.resetBtn.render(this.element);
+
+    this.generateBtn = new Button(
+      'Generate',
+      ['garage-panel__btn', 'async-race_btn'],
+      handlers.generateCarsHandler
+    );
+    this.generateBtn.render(this.element);
   }
 
   toggleDisableUpdateInput = (isDisabled: boolean): void => {
@@ -43,10 +59,14 @@ class Panel extends BaseComponent implements IPanel {
 
   toggleDisableRaceBtn = (isDisabled: boolean): void => {
     this.raceBtn.toggleDisabling(isDisabled);
-  }
+  };
 
   toggleDisableResetBtn = (isDisabled: boolean): void => {
     this.resetBtn.toggleDisabling(isDisabled);
+  };
+
+  toggleDisableGenerateBtn = (isDisabled: boolean): void => {
+    this.generateBtn.toggleDisabling(isDisabled);
   }
 
   setUpdateInputValues = (car: CarType): void => {

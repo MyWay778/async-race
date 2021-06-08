@@ -9,15 +9,12 @@ import disableUpdateCarInputHandler from './helpers/disable-update-car-input-han
 import noId from './constants';
 
 export default class Store implements IStore {
-  state: State;
+  state: State = {cars: []};
 
   constructor(private readonly view: IView) {}
 
   setCars = (cars: CarType[]): void => {
-    this.state = {
-      ...this.state,
-      cars,
-    };
+    this.state.cars = cars;
     this.showCars();
   };
 
@@ -86,7 +83,6 @@ export default class Store implements IStore {
 
   setWinner = (winner: WinnerType): void => {
     this.state.winner = winner;
-    console.log(this.state.winner);
   };
 
   startRace = (): void => {
@@ -110,5 +106,13 @@ export default class Store implements IStore {
   allCarsAreDropped = (): void => {
     this.view.toggleDisableResetBtn(elementStatus.undisabled);
     this.view.toggleDisableRaceBtn(elementStatus.undisabled);
+  }
+
+  setCarsAmount = (value: string): void => {
+    this.view.setCarsAmount(value);
+  }
+
+  carsGeneration = (isGeneration = true): void => {
+    this.view.toggleDisableGenerateBtn(isGeneration);
   }
 }

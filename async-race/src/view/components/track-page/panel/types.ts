@@ -6,6 +6,7 @@ export type PanelHandlersType = {
   updateCarHandler: UpdateCarHandlerType;
   startRaceHandler: () => void;
   resetRaceHandler: () => void;
+  generateCarsHandler: () => void;
 };
 
 export type ToggleDisablingBtnType = (isDisabled: boolean) => void;

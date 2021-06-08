@@ -4,12 +4,14 @@ import { ToggleDisablingBtnType } from './panel/types';
 
 
 export default interface ITrackPage extends IBaseComponent {
-  showCars: (cars: CarType[]) => void;
-  showCar: (car: CarType) => void;
+  showCars: (cars: CarType[], carAmount?: number) => void;
+  showCar: (car: CarType, carAmount?: number) => void;
   toggleDisableUpdateBtn: ToggleDisablingBtnType;
   setUpdateInputValues: (car: CarType) => void;
   startAllCars: () => void;
   resetAllCars: () => void;
   toggleDisableRaceBtn: ToggleDisablingBtnType;
   toggleDisableResetBtn: ToggleDisablingBtnType;
+  setCarsAmount: (value: string) => void;
+  toggleDisableGenerateBtn: ToggleDisablingBtnType;
 }

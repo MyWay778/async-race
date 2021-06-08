@@ -1,4 +1,6 @@
-export const createTitleBlock = () => {
+import { TitleTupleType } from './types';
+
+export const createTitleBlock = (): TitleTupleType => {
   const titleBlock = document.createElement('div');
   titleBlock.classList.add('garage-title');
 
@@ -10,9 +12,13 @@ export const createTitleBlock = () => {
   carCount.classList.add('garage-title__count');
   carCount.textContent = '(0)';
 
+  const changeCount = (newCount: string) => {
+    carCount.textContent = `(${newCount})`;
+  };
+
   titleBlock.append(title, carCount);
 
-  return titleBlock;
+  return [titleBlock, changeCount];
 };
 
 export const createPageNumberBlock = () => {

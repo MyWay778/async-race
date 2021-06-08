@@ -19,4 +19,7 @@ export type TrackPageHandlersType = {
   finishedCarHandler: FinishedCarHandler;
   startRaceHandler: (cars: ICar[]) => void;
   resetRaceHandler: (cars: ICar[]) => void;
+  generateCarsHandler: () => void;
 };
+
+export type TitleTupleType = [HTMLElement, (value: string) => void];

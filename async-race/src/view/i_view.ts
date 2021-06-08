@@ -16,4 +16,6 @@ export default interface IView {
   toggleDisableRaceBtn: ToggleDisablingBtnType;
   toggleDisableResetBtn: ToggleDisablingBtnType;
   resetRace: () => void;
+  setCarsAmount: (value: string) => void;
+  toggleDisableGenerateBtn: ToggleDisablingBtnType;
 }

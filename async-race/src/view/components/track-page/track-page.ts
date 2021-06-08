@@ -16,6 +16,7 @@ class TrackPage extends BaseComponent implements ITrackPage {
   private readonly carList: HTMLUListElement;
   private readonly panel: IPanel;
   private garage: ICar[] = [];
+  private setTitleBlock: (value: string) => void;
 
   constructor(private readonly handlers: TrackPageHandlersType) {
     super('main');
@@ -26,10 +27,12 @@ class TrackPage extends BaseComponent implements ITrackPage {
       updateCarHandler: this.handlers.updateCarHandler,
       startRaceHandler: this.startRaceHandler,
       resetRaceHandler: this.resetRaceHandler,
+      generateCarsHandler: this.handlers.generateCarsHandler,
     });
 
     const trackSection = document.createElement('section');
-    const titleBlock = createTitleBlock();
+    const [titleBlock, setTitleBlock] = createTitleBlock();
+    this.setTitleBlock = setTitleBlock;
     const pageNumberBlock = createPageNumberBlock();
 
     this.carList = document.createElement('ul');
@@ -47,7 +50,7 @@ class TrackPage extends BaseComponent implements ITrackPage {
     this.element.append(trackSection);
   }
 
-  showCars = (cars: CarType[]): void => {
+  showCars = (cars: CarType[], carAmount?: number): void => {
     if (cars.length === 0) {
       this.carList.innerHTML = '';
       const messageLine = document.createElement('li');
@@ -62,7 +65,7 @@ class TrackPage extends BaseComponent implements ITrackPage {
       this.garage = [];
     }
     cars.forEach((car) => {
-      this.showCar(car);
+      this.showCar(car, carAmount);
     });
   };
 
@@ -98,11 +101,20 @@ class TrackPage extends BaseComponent implements ITrackPage {
     this.panel.setUpdateInputValues(car);
   };
 
-  showCar = (car: CarType): void => {
+  showCar = (car: CarType, carAmount?: number): void => {
     const newCar = new Car(car.id, car.name, car.color, this.handlers);
     this.garage.push(newCar);
     this.carList.append(newCar.element);
+    this.setTitleBlock(String(carAmount || this.garage.length));
   };
+
+  setCarsAmount = (value: string): void => {
+    this.setTitleBlock(value);
+  }
+
+  toggleDisableGenerateBtn = (isDisabled: boolean): void => {
+    this.panel.toggleDisableGenerateBtn(isDisabled);
+  }
 }
 
 export default TrackPage;

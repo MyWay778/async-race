@@ -1,3 +1,5 @@
+import { CarType } from '@store/state/types';
+
 export type EngineStatusType = 'started' | 'stopped';
 export type MovementCharacteristicsType = {
   velocity: number;
@@ -6,4 +8,9 @@ export type MovementCharacteristicsType = {
 export type DriveModeStatusType = 'drive';
 export type DriveSuccessType = {
   success: true;
+};
+
+export type ResponseGerCarsType = {
+  cars: CarType[];
+  carsAmount: string;
 };

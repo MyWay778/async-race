@@ -30,6 +30,7 @@ export default class View implements IView {
       finishedCarHandler: this.controller.finishCar,
       startRaceHandler: this.controller.startRace,
       resetRaceHandler: this.controller.resetRace,
+      generateCarsHandler: this.controller.generateCars,
     };
 
     this.trackPage = new TrackPage(trackPageHandlers);
@@ -79,5 +80,13 @@ export default class View implements IView {
 
   resetRace = (): void => {
     this.trackPage.resetAllCars();
+  }
+
+  setCarsAmount = (value: string): void => {
+    this.trackPage.setCarsAmount(value);
+  }
+
+  toggleDisableGenerateBtn = (isDisabled: boolean): void => {
+    this.trackPage.toggleDisableGenerateBtn(isDisabled);
   }
 }

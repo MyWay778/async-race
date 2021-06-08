@@ -6,13 +6,21 @@ import {
   DriveSuccessType,
   EngineStatusType,
   MovementCharacteristicsType,
+  ResponseGerCarsType,
 } from './types';
 
 export default class Api implements IApi {
   constructor(private readonly baseUrl: string) {}
 
-  getCars = async (): Promise<CarType[]> =>
-    (await fetch(`${this.baseUrl}garage/`)).json();
+  getCars = async (page = 1, carLimit = 7): Promise<ResponseGerCarsType> => {
+    const response = await fetch(
+      `${this.baseUrl}garage/?_page=${page}&_limit=${carLimit}`
+    );
+    return {
+      cars: await response.json(),
+      carsAmount: response.headers.get('X-Total-Count'),
+    };
+  };
 
   createCar = async (car: CarInputType): Promise<CarType> =>
     (

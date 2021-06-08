@@ -19,4 +19,6 @@ export default interface IStore {
   startRace: () => void;
   resetRace: () => void;
   allCarsAreDropped: () => void;
+  setCarsAmount: (value: string) => void;
+  carsGeneration: (isGeneration?: boolean) => void;
 }
