@@ -6,6 +6,7 @@ import { CarInputType } from './car-input/types';
 import IPanel from './i_panel';
 import './panel.scss';
 import { PanelHandlersType } from './types';
+import elementStatus from './constants';
 
 class Panel extends BaseComponent implements IPanel {
   readonly element: HTMLElement;
@@ -43,6 +44,7 @@ class Panel extends BaseComponent implements IPanel {
       ['garage-panel__btn', 'async-race_btn'],
       handlers.resetRaceHandler
     );
+    this.resetBtn.toggleDisabling(elementStatus.disabled);
     this.resetBtn.render(this.element);
 
     this.generateBtn = new Button(

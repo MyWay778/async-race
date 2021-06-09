@@ -63,6 +63,9 @@ export default class Store implements IStore {
       movementData.distance / movementData.velocity
     );
     car.start(movementTime);
+    // if (!this.state.raceStatus) {
+    //   car.toggleStopBtn(elementStatus.undisabled);
+    // }
   };
 
   stopCar = (car: ICar): void => {
@@ -87,12 +90,15 @@ export default class Store implements IStore {
 
   startRace = (): void => {
     this.view.toggleDisableRaceBtn(elementStatus.disabled);
-    // this.view.startRace();
-    this.state.race = true;
+    this.view.toggleDisableResetBtn(elementStatus.undisabled);
+    // this.view.toggleDisableGenerateBtn(elementStatus.disabled);
+    this.state.raceStatus = true;
   }
 
   resetRace = (): void => {
     this.view.toggleDisableResetBtn(elementStatus.disabled);
+    this.view.toggleDisableRaceBtn(elementStatus.disabled);
+    this.state.raceStatus = false;
   }
 
   private showCars = (): void => {
@@ -104,8 +110,8 @@ export default class Store implements IStore {
   };
 
   allCarsAreDropped = (): void => {
-    this.view.toggleDisableResetBtn(elementStatus.undisabled);
     this.view.toggleDisableRaceBtn(elementStatus.undisabled);
+    this.view.toggleDisableGenerateBtn(elementStatus.undisabled);
   }
 
   setCarsAmount = (value: string): void => {
@@ -114,5 +120,10 @@ export default class Store implements IStore {
 
   carsGeneration = (isGeneration = true): void => {
     this.view.toggleDisableGenerateBtn(isGeneration);
+  }
+
+  finishedCar = (car: ICar): void => {
+    car.toggleStopBtn(elementStatus.undisabled);
+    this.state.isPending = false;
   }
 }

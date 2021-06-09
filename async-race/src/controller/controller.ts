@@ -1,6 +1,8 @@
 import { CarIdType, CarType, WinnerType } from '@store/state/types';
 import ICar from '@view/components/track-page/car/types/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
+import elementStatus from '@view/components/track-page/panel/constants';
+import { MovementCharacteristicsType } from 'api/types';
 import Api from '../api/api';
 import IStore from '../store/i_store';
 import carGenerator from './helpers/car-generator';
@@ -20,12 +22,16 @@ export default class Controller implements IController {
   }
 
   showCars = async (): Promise<void> => {
+    if (this.checkIsPendingAppStatus()) {
+      return;
+    }
+
     try {
       const carsResponse = await this.api.getCars();
+      this.store.state.isPending = false;
       this.store.setCars(carsResponse.cars);
       this.store.setCarsAmount(carsResponse.carsAmount);
     } catch (e) {
-      console.log('Error ', e);
       this.store.setCars([]);
     }
   };
@@ -63,13 +69,13 @@ export default class Controller implements IController {
   };
 
   startCar = async (car: ICar): Promise<void> => {
-    const movementData = await this.api.engine(car.id, 'started');
-    this.store.startCar(car, movementData);
-    try {
-      await this.api.driveMode(car.id, 'drive');
-    } catch (e) {
-      this.store.stopCar(car);
+    if (this.checkIsPendingAppStatus()) {
+      return;
     }
+    const movementData = await this.getMovementData(car);
+    this.store.startCar(car, movementData);
+    await this.setDriveMode(car);
+    this.store.finishedCar(car);
   };
 
   stopCar = async (car: ICar): Promise<void> => {
@@ -78,7 +84,7 @@ export default class Controller implements IController {
   };
 
   finishCar = async (carId: CarIdType, movementTime: number): Promise<void> => {
-    if (!this.store.state.race || this.store.state.winner) {
+    if (!this.store.state.raceStatus || this.store.state.winner) {
       return;
     }
     const time = Number((movementTime / 1000).toFixed(2));
@@ -99,13 +105,34 @@ export default class Controller implements IController {
       this.api.createWinner(newWinner);
       this.store.setWinner(newWinner);
     }
-    this.store.state.race = false;
+    this.store.state.raceStatus = false;
     this.store.state.winner = undefined;
   };
 
   startRace = (cars: ICar[]): void => {
-    cars.forEach((car) => car.startHandler());
+    if (this.checkIsPendingAppStatus()) {
+      return;
+    }
     this.store.startRace();
+    cars.forEach((car) => {
+      car.toggleStartBtn(elementStatus.disabled);
+    });
+    const allCarsMovementData = cars.map((car) => this.getMovementData(car));
+    const allCarsFinishedResponses: Promise<void>[] = [];
+    Promise.allSettled(allCarsMovementData).then((data) => {
+      cars.forEach((car, ind) => {
+        const movementData = (
+          data[ind] as PromiseFulfilledResult<MovementCharacteristicsType>
+        ).value;
+        if (this.store.state.raceStatus) {
+          this.store.startCar(car, movementData);
+          allCarsFinishedResponses.push(this.setDriveMode(car));
+        }
+      });
+      Promise.allSettled(allCarsFinishedResponses).then(() => {
+        this.store.state.isPending = false;
+      });
+    });
   };
 
   resetRace = (cars: ICar[]): void => {
@@ -117,12 +144,35 @@ export default class Controller implements IController {
   };
 
   generateCars = async (): Promise<void> => {
+    if (this.checkIsPendingAppStatus()) {
+      return;
+    }
     this.store.carsGeneration();
     const cars = carGenerator();
     const requests = cars.map((car) => this.api.createCar(car));
     Promise.allSettled(requests).then(() => {
+      this.store.state.isPending = false;
       this.store.carsGeneration(false);
       this.showCars();
     });
+  };
+
+  private getMovementData = (car: ICar): Promise<MovementCharacteristicsType> =>
+    this.api.engine(car.id, 'started');
+
+  private setDriveMode = async (car: ICar): Promise<void> => {
+    try {
+      await this.api.driveMode(car.id, 'drive');
+    } catch (e) {
+      this.store.stopCar(car);
+    }
+  };
+
+  private checkIsPendingAppStatus = (): boolean => {
+    if (this.store.state.isPending) {
+      return true;
+    }
+    this.store.state.isPending = true;
+    return false;
   };
 }

@@ -63,13 +63,21 @@ export default class Car extends BaseComponent implements ICar {
 
   startHandler = (): void => {
     this.startBtn.disabled = true;
-    this.stopBtn.disabled = false;
+    // this.stopBtn.disabled = false;
     return this.handlers.startCarHandler(this);
   };
 
   stopHandler = (): void => {
     this.stopBtn.disabled = true;
     return this.handlers.stopCarHandler(this);
+  }
+
+  toggleStopBtn = (isDisabled: boolean): void => {
+    this.stopBtn.disabled = isDisabled;
+  }
+
+  toggleStartBtn = (isDisabled: boolean): void => {
+    this.startBtn.disabled = isDisabled;
   }
 
   private createCarHeader() {

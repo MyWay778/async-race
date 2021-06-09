@@ -4,5 +4,6 @@ export type State = {
   cars: Array<CarType>;
   updatingCar?: CarType;
   winner?: WinnerType;
-  race?: boolean;
+  raceStatus?: boolean;
+  isPending?: boolean;
 };

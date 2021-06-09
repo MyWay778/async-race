@@ -21,4 +21,5 @@ export default interface IStore {
   allCarsAreDropped: () => void;
   setCarsAmount: (value: string) => void;
   carsGeneration: (isGeneration?: boolean) => void;
+  finishedCar: (car: ICar) => void;
 }

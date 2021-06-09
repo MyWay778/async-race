@@ -6,4 +6,6 @@ export default interface ICar {
   comeBack: () => void;
   startHandler: () => void;
   stopHandler: () => void;
+  toggleStopBtn: (isDisabled: boolean) => void;
+  toggleStartBtn: (isDisabled: boolean) => void;
 }
