@@ -1,8 +1,14 @@
 import IController from '@controller/i_controller';
+import { State } from '@store/state/i_state';
 import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
 import { Header, TrackPage } from './components/index';
+import {
+  createPageNumberBlock,
+  createTitleBlock,
+} from './components/track-page/helpers';
 import ITrackPage from './components/track-page/i_track-page';
+import Paginator from './components/track-page/paginator/paginator';
 import IView from './i_view';
 
 export { IView };
@@ -10,9 +16,26 @@ export { IView };
 export default class View implements IView {
   private trackPage: ITrackPage;
   private controller: IController;
+  subscriber: (listener: (state: State) => void) => void;
   private rootEventHandler: MouseEventHandler;
+  private paginator: Paginator;
+  private setTitleBlock: (value: string) => void;
+  private setPageNumberBlock: (value: string) => void;
 
   constructor(private readonly root: HTMLElement) {}
+
+  subscribe = (): void => {
+    this.subscriber(this.viewListener);
+  };
+
+  viewListener = (state: State): void => {
+    if (this.setTitleBlock) {
+      this.setTitleBlock(String(state.allCarsInGarage));
+    }
+    if (this.setPageNumberBlock) {
+      this.setPageNumberBlock(String(state.currentPage));
+    }
+  };
 
   init = (controller: IController): void => {
     this.controller = controller;
@@ -31,9 +54,25 @@ export default class View implements IView {
       startRaceHandler: this.controller.startRace,
       resetRaceHandler: this.controller.resetRace,
       generateCarsHandler: this.controller.generateCars,
+      nextPageHandler: this.controller.nextPage,
+      prevPageHandler: this.controller.prevPage,
     };
 
-    this.trackPage = new TrackPage(trackPageHandlers);
+    const [titleBlock, setTitleBlock] = createTitleBlock();
+    this.setTitleBlock = setTitleBlock;
+
+    const [pageNumberBlock, setPageNumberBlock] = createPageNumberBlock();
+    this.setPageNumberBlock = setPageNumberBlock;
+
+    this.paginator = new Paginator(trackPageHandlers);
+    this.paginator.subscribe(this.subscriber);
+
+    this.trackPage = new TrackPage(
+      trackPageHandlers,
+      this.paginator.element,
+      titleBlock,
+      pageNumberBlock
+    );
     this.trackPage.render(this.root);
   };
 
@@ -59,11 +98,11 @@ export default class View implements IView {
 
   toggleDisableResetBtn = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableResetBtn(isDisabled);
-  }
+  };
 
   toggleDisableAllCarControl = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableAllCarControl(isDisabled);
-  }
+  };
 
   setUpdateInputValues = (car: CarType): void => {
     this.trackPage.setUpdateInputValues(car);
@@ -88,13 +127,13 @@ export default class View implements IView {
 
   resetRace = (): void => {
     this.trackPage.resetAllCars();
-  }
+  };
 
   setCarsAmount = (value: string): void => {
     this.trackPage.setCarsAmount(value);
-  }
+  };
 
   toggleDisableGenerateBtn = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableGenerateBtn(isDisabled);
-  }
+  };
 }

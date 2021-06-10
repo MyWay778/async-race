@@ -14,4 +14,6 @@ export default interface IController {
   startRace: (cars: ICar[]) => void;
   resetRace: (cars: ICar[]) => void;
   generateCars: () => void;
+  nextPage: () => void;
+  prevPage: () => void;
 }

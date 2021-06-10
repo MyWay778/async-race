@@ -1,10 +1,14 @@
 import IController from '@controller/i_controller';
+import { State } from '@store/state/i_state';
 import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
 import { ToggleDisablingBtnType } from './components/track-page/panel/types';
 
 
 export default interface IView {
+  subscriber: (listener: (state: State) => void) => void; 
+  subscribe: () => void;
+  
   init: (controller: IController) => void;
   showCars: (cars: CarType[]) => void;
   showCar: (car: CarType) => void;

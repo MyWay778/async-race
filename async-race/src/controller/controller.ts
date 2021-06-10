@@ -27,10 +27,10 @@ export default class Controller implements IController {
     }
 
     try {
-      const carsResponse = await this.api.getCars();
+      const carsResponse = await this.api.getCars(this.store.state.currentPage, this.store.state.carsOnPageLimit);
       this.store.state.isPending = false;
       this.store.setCars(carsResponse.cars);
-      this.store.setCarsAmount(carsResponse.carsAmount);
+      this.store.changeState('allCarsInGarage', Number (carsResponse.carsAmount));
     } catch (e) {
       this.store.setCars([]);
     }
@@ -170,6 +170,21 @@ export default class Controller implements IController {
       this.showCars();
     });
   };
+
+  nextPage = (): void => {
+    this.changePage('next');
+  }
+
+  prevPage = (): void => {
+    this.changePage('prev');
+  }
+
+  private changePage = (direction: 'next' | 'prev'): void => {
+    const count = direction === 'next' ? 1 : -1;
+    const newPageNumber = this.store.state.currentPage + count;
+    this.store.changeState('currentPage', newPageNumber);
+    this.showCars(); 
+  } 
 
   private getMovementData = (car: ICar): Promise<MovementCharacteristicsType> =>
     this.api.engine(car.id, 'started');

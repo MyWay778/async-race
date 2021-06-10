@@ -9,9 +9,39 @@ import disableUpdateCarInputHandler from './helpers/disable-update-car-input-han
 import noId from './constants';
 
 export default class Store implements IStore {
-  state: State = { cars: [] };
+  state: State = {
+    cars: [],
+    currentPage: 1,
+    allCarsInGarage: 0,
+    carsOnPageLimit: 7,
+  };
 
-  constructor(private readonly view: IView) {}
+  listeners: Array<(state: State) => void> = [];
+
+  constructor(private readonly view: IView) {
+    this.view.subscriber = this.subscriber;
+    this.view.subscribe();
+    // this.notify();
+  }
+
+  notify = (): void => {
+    this.listeners.forEach((listener) => listener(this.state));
+  }
+
+  changeState = <T extends keyof State, K extends State[T]>(
+    prop: T,
+    value: K
+  ): void => {
+    this.state[prop] = value;
+    this.notify();
+  };
+
+
+
+  subscriber = (listener: (state: State) => void): void => {
+    this.listeners.push(listener);
+    this.notify();
+  };
 
   setCars = (cars: CarType[]): void => {
     this.state.cars = cars;
@@ -87,7 +117,7 @@ export default class Store implements IStore {
     this.view.toggleDisableUpdateBtn(elementStatus.disabled);
     this.view.toggleDisableRaceBtn(elementStatus.disabled);
     this.view.toggleDisableGenerateBtn(elementStatus.disabled);
-  }
+  };
 
   checkWinner = (): boolean => !!this.state.winner;
 
@@ -105,7 +135,7 @@ export default class Store implements IStore {
 
   allCarsFinished = (): void => {
     this.view.toggleDisableResetBtn(elementStatus.undisabled);
-  }
+  };
 
   resetRace = (): void => {
     this.view.toggleDisableResetBtn(elementStatus.disabled);
@@ -128,6 +158,7 @@ export default class Store implements IStore {
   };
 
   setCarsAmount = (value: string): void => {
+    this.state.allCarsInGarage = Number(value);
     this.view.setCarsAmount(value);
   };
 

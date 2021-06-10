@@ -5,6 +5,7 @@ import { CarType, WinnerType } from './state/types';
 
 export default interface IStore {
   state: State;
+  changeState: <T extends keyof State, K extends State[T]>(prop: T, value: K)  => void;
   setCars: (cars: CarType[]) => void;
   setCar: (car: CarType) => void;
   setUpdatingCar: (car: CarType) => void;

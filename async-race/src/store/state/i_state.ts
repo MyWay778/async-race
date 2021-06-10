@@ -6,4 +6,11 @@ export type State = {
   winner?: WinnerType;
   raceStatus?: boolean;
   isPending?: boolean;
+  currentPage: number;
+  allCarsInGarage: number;
+  carsOnPageLimit: number;
+};
+
+export type ChangeStatePropertyType = {
+  [K in keyof State]: State[K];
 };

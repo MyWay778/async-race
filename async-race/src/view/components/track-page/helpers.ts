@@ -21,7 +21,7 @@ export const createTitleBlock = (): TitleTupleType => {
   return [titleBlock, changeCount];
 };
 
-export const createPageNumberBlock = () => {
+export const createPageNumberBlock = (): TitleTupleType => {
   const pageNumberBlock = document.createElement('div');
   pageNumberBlock.classList.add('garage-page-number');
 
@@ -33,7 +33,11 @@ export const createPageNumberBlock = () => {
   pageNumber.classList.add('garage-page-number__number');
   pageNumber.textContent = '#1';
 
+  const changeCount = (newCount: string) => {
+    pageNumber.textContent = `#${newCount}`;
+  };
+
   pageNumberBlock.append(pageNumberTitle, pageNumber);
 
-  return pageNumberBlock;
+  return [pageNumberBlock, changeCount];
 };
