@@ -1,6 +1,6 @@
 import elementStatus from '@view/components/track-page/panel/constants';
 import { MovementCharacteristicsType } from 'api/types';
-import ICar from '@view/components/track-page/car/types/i_car';
+import ICar from '@view/components/track-page/car/i_car';
 import { State } from './state/i_state';
 import IStore from './i_store';
 import { CarType, WinnerType } from './state/types';
@@ -9,7 +9,7 @@ import disableUpdateCarInputHandler from './helpers/disable-update-car-input-han
 import noId from './constants';
 
 export default class Store implements IStore {
-  state: State = {cars: []};
+  state: State = { cars: [] };
 
   constructor(private readonly view: IView) {}
 
@@ -63,9 +63,6 @@ export default class Store implements IStore {
       movementData.distance / movementData.velocity
     );
     car.start(movementTime);
-    // if (!this.state.raceStatus) {
-    //   car.toggleStopBtn(elementStatus.undisabled);
-    // }
   };
 
   stopCar = (car: ICar): void => {
@@ -79,8 +76,18 @@ export default class Store implements IStore {
     if (movementData.velocity === 0) {
       car.stop();
       car.comeBack();
+      car.toggleDisableBtn('start', elementStatus.undisabled);
+      this.view.toggleDisableRaceBtn(elementStatus.undisabled);
+      this.view.toggleDisableResetBtn(elementStatus.disabled);
     }
   };
+
+  readyToStart = (): void => {
+    this.view.toggleDisableCreateBtn(elementStatus.disabled);
+    this.view.toggleDisableUpdateBtn(elementStatus.disabled);
+    this.view.toggleDisableRaceBtn(elementStatus.disabled);
+    this.view.toggleDisableGenerateBtn(elementStatus.disabled);
+  }
 
   checkWinner = (): boolean => !!this.state.winner;
 
@@ -90,16 +97,21 @@ export default class Store implements IStore {
 
   startRace = (): void => {
     this.view.toggleDisableRaceBtn(elementStatus.disabled);
-    this.view.toggleDisableResetBtn(elementStatus.undisabled);
-    // this.view.toggleDisableGenerateBtn(elementStatus.disabled);
+    // this.view.toggleDisableResetBtn(elementStatus.undisabled);
+    this.view.toggleDisableGenerateBtn(elementStatus.disabled);
+    this.view.toggleDisableCreateBtn(elementStatus.disabled);
     this.state.raceStatus = true;
+  };
+
+  allCarsFinished = (): void => {
+    this.view.toggleDisableResetBtn(elementStatus.undisabled);
   }
 
   resetRace = (): void => {
     this.view.toggleDisableResetBtn(elementStatus.disabled);
     this.view.toggleDisableRaceBtn(elementStatus.disabled);
     this.state.raceStatus = false;
-  }
+  };
 
   private showCars = (): void => {
     this.view.showCars(this.state.cars);
@@ -112,18 +124,28 @@ export default class Store implements IStore {
   allCarsAreDropped = (): void => {
     this.view.toggleDisableRaceBtn(elementStatus.undisabled);
     this.view.toggleDisableGenerateBtn(elementStatus.undisabled);
-  }
+    this.view.toggleDisableCreateBtn(elementStatus.undisabled);
+  };
 
   setCarsAmount = (value: string): void => {
     this.view.setCarsAmount(value);
-  }
+  };
 
   carsGeneration = (isGeneration = true): void => {
-    this.view.toggleDisableGenerateBtn(isGeneration);
-  }
+    const isDisabled = isGeneration;
+    this.view.toggleDisableGenerateBtn(isDisabled);
+    this.view.toggleDisableCreateBtn(isDisabled);
+    this.view.toggleDisableRaceBtn(isDisabled);
+    // this.view.toggleDisableResetBtn(isDisabled);
+    this.view.toggleDisableAllCarControl(isDisabled);
+  };
 
   finishedCar = (car: ICar): void => {
     car.toggleStopBtn(elementStatus.undisabled);
     this.state.isPending = false;
-  }
+    this.view.toggleDisableCreateBtn(elementStatus.undisabled);
+    // this.view.toggleDisableRaceBtn(elementStatus.undisabled);
+    this.view.toggleDisableResetBtn(elementStatus.undisabled);
+    this.view.toggleDisableGenerateBtn(elementStatus.undisabled);
+  };
 }

@@ -1,4 +1,4 @@
-import { UpdateCarHandlerType } from '../car/types/handlers';
+import { UpdateCarHandlerType } from '../car/handlers';
 import { CreateCarHandlerType } from './car-input/types';
 
 export type PanelHandlersType = {

@@ -1,3 +1,5 @@
+import { CarBtnNameType } from './types';
+
 export default interface ICar {
   id: number;
   init: () => void;
@@ -8,4 +10,6 @@ export default interface ICar {
   stopHandler: () => void;
   toggleStopBtn: (isDisabled: boolean) => void;
   toggleStartBtn: (isDisabled: boolean) => void;
+  toggleDisableAllButtons: (isDisabled: boolean) => void;
+  toggleDisableBtn: (button: CarBtnNameType | CarBtnNameType[], isDisabled: boolean) => void;
 }

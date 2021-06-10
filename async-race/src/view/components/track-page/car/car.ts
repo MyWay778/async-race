@@ -1,9 +1,10 @@
 import BaseComponent from '../../shared/base-component/base-component';
 import './car.scss';
-import createSvgCar from './helpers';
 import carSvgImage from './constants';
-import { CarHandlersType } from './types/handlers';
-import ICar from './types/i_car';
+import { CarHandlersType } from './handlers';
+import createSvgCar from './helpers';
+import ICar from './i_car';
+import { CarBtnNameType, CarControlType } from './types';
 
 export default class Car extends BaseComponent implements ICar {
   private car: HTMLElement;
@@ -11,6 +12,9 @@ export default class Car extends BaseComponent implements ICar {
   private requestAnimationId: number;
   private startBtn: HTMLButtonElement;
   private stopBtn: HTMLButtonElement;
+  private selectBtn: HTMLButtonElement;
+  private removeBtn: HTMLButtonElement;
+  private control: CarControlType = {};
 
   constructor(
     readonly id: number,
@@ -58,7 +62,6 @@ export default class Car extends BaseComponent implements ICar {
   comeBack = (): void => {
     this.stop();
     this.carImage.style.left = '0%';
-    this.startBtn.disabled = false;
   };
 
   startHandler = (): void => {
@@ -70,15 +73,37 @@ export default class Car extends BaseComponent implements ICar {
   stopHandler = (): void => {
     this.stopBtn.disabled = true;
     return this.handlers.stopCarHandler(this);
-  }
+  };
 
   toggleStopBtn = (isDisabled: boolean): void => {
     this.stopBtn.disabled = isDisabled;
-  }
+  };
 
   toggleStartBtn = (isDisabled: boolean): void => {
     this.startBtn.disabled = isDisabled;
-  }
+  };
+
+  toggleDisableBtn = (button: CarBtnNameType | CarBtnNameType[], isDisabled: boolean): void => {
+    if (button instanceof Array) {
+      button.forEach(btn => {this.control[btn].disabled = isDisabled});
+    } else {
+      if (button === 'all') {
+        Object.values(this.control).forEach((btn) => {
+          const btnCopy = btn; // For Lint
+          btnCopy.disabled = isDisabled;
+        });
+        return;
+      }
+      this.control[button].disabled = isDisabled;
+    }
+  };
+
+  toggleDisableAllButtons = (isDisabled: boolean): void => {
+    this.startBtn.disabled = isDisabled;
+    this.stopBtn.disabled = isDisabled;
+    this.selectBtn.disabled = isDisabled;
+    this.removeBtn.disabled = isDisabled;
+  };
 
   private createCarHeader() {
     const header = document.createElement('div');
@@ -87,10 +112,11 @@ export default class Car extends BaseComponent implements ICar {
     const carPanel = document.createElement('div');
     carPanel.classList.add('car-panel');
 
-    const selectBtn = document.createElement('button');
-    selectBtn.classList.add('car-panel__btn');
-    selectBtn.textContent = 'Select';
-    selectBtn.onclick = (e: MouseEvent) => {
+    this.selectBtn = document.createElement('button');
+    this.selectBtn.classList.add('car-panel__btn');
+    this.selectBtn.textContent = 'Select';
+    this.control.select = this.selectBtn;
+    this.selectBtn.onclick = (e: MouseEvent) => {
       e.stopPropagation(); // To prevent the root listener from capturing the event
       this.handlers.selectCarHandler({
         id: this.id,
@@ -99,10 +125,11 @@ export default class Car extends BaseComponent implements ICar {
       });
     };
 
-    const removeBtn = document.createElement('button');
-    removeBtn.classList.add('car-panel__btn');
-    removeBtn.textContent = 'Remove';
-    removeBtn.onclick = () => {
+    this.removeBtn = document.createElement('button');
+    this.removeBtn.classList.add('car-panel__btn');
+    this.removeBtn.textContent = 'Remove';
+    this.control.remove = this.removeBtn;
+    this.removeBtn.onclick = () => {
       this.handlers.removeCarHandler(this.id);
     };
 
@@ -110,7 +137,7 @@ export default class Car extends BaseComponent implements ICar {
     carName.classList.add('car-header__name');
     carName.textContent = this.name;
 
-    carPanel.append(selectBtn, removeBtn);
+    carPanel.append(this.selectBtn, this.removeBtn);
     header.append(carPanel, carName);
     this.element.append(header);
   }
@@ -126,12 +153,14 @@ export default class Car extends BaseComponent implements ICar {
     this.startBtn.classList.add('car-track-engine-control__btn');
     this.startBtn.textContent = 'A';
     this.startBtn.onclick = this.startHandler;
+    this.control.start = this.startBtn;
 
     this.stopBtn = document.createElement('button');
     this.stopBtn.classList.add('car-track-engine-control__btn');
     this.stopBtn.textContent = 'B';
     this.stopBtn.disabled = true;
     this.stopBtn.onclick = this.stopHandler;
+    this.control.stop = this.stopBtn;
 
     this.car = document.createElement('figure');
     this.car.classList.add('car-track-car');

@@ -14,4 +14,6 @@ export default interface ITrackPage extends IBaseComponent {
   toggleDisableResetBtn: ToggleDisablingBtnType;
   setCarsAmount: (value: string) => void;
   toggleDisableGenerateBtn: ToggleDisablingBtnType;
+  toggleDisableCreateBtn: ToggleDisablingBtnType;
+  toggleDisableAllCarControl: ToggleDisablingBtnType;
 }

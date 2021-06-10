@@ -59,6 +59,10 @@ class Panel extends BaseComponent implements IPanel {
     this.update.toggleDisabled(isDisabled);
   };
 
+  toggleDisableCreateInput = (isDisabled: boolean): void => {
+    this.create.toggleDisabled(isDisabled);
+  };
+
   toggleDisableRaceBtn = (isDisabled: boolean): void => {
     this.raceBtn.toggleDisabling(isDisabled);
   };

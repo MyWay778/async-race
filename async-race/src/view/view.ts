@@ -49,12 +49,20 @@ export default class View implements IView {
     this.trackPage.toggleDisableUpdateBtn(isDisabled);
   };
 
+  toggleDisableCreateBtn = (isDisabled: boolean): void => {
+    this.trackPage.toggleDisableCreateBtn(isDisabled);
+  };
+
   toggleDisableRaceBtn = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableRaceBtn(isDisabled);
   };
 
   toggleDisableResetBtn = (isDisabled: boolean): void => {
     this.trackPage.toggleDisableResetBtn(isDisabled);
+  }
+
+  toggleDisableAllCarControl = (isDisabled: boolean): void => {
+    this.trackPage.toggleDisableAllCarControl(isDisabled);
   }
 
   setUpdateInputValues = (car: CarType): void => {

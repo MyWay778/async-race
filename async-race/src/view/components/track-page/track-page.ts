@@ -8,7 +8,7 @@ import { createPageNumberBlock, createTitleBlock } from './helpers';
 import ITrackPage from './i_track-page';
 import { TrackPageHandlersType } from './types';
 import IPanel from './panel/i_panel';
-import ICar from './car/types/i_car';
+import ICar from './car/i_car';
 
 export { ITrackPage };
 
@@ -89,6 +89,10 @@ class TrackPage extends BaseComponent implements ITrackPage {
     this.panel.toggleDisableUpdateInput(isDisabled);
   };
 
+  toggleDisableCreateBtn = (isDisabled: boolean): void => {
+    this.panel.toggleDisableCreateInput(isDisabled);
+  };
+
   toggleDisableRaceBtn = (isDisabled: boolean): void => {
     this.panel.toggleDisableRaceBtn(isDisabled);
   };
@@ -96,6 +100,11 @@ class TrackPage extends BaseComponent implements ITrackPage {
   toggleDisableResetBtn = (isDisabled: boolean): void => {
     this.panel.toggleDisableResetBtn(isDisabled);
   };
+
+  toggleDisableAllCarControl = (isDisabled: boolean): void => {
+    this.garage.forEach(car => car.toggleDisableBtn('all', isDisabled));
+  };
+
 
   setUpdateInputValues = (car: CarType): void => {
     this.panel.setUpdateInputValues(car);

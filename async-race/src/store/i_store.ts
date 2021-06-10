@@ -1,4 +1,4 @@
-import ICar from '@view/components/track-page/car/types/i_car';
+import ICar from '@view/components/track-page/car/i_car';
 import { MovementCharacteristicsType } from 'api/types';
 import { State } from './state/i_state';
 import { CarType, WinnerType } from './state/types';
@@ -22,4 +22,6 @@ export default interface IStore {
   setCarsAmount: (value: string) => void;
   carsGeneration: (isGeneration?: boolean) => void;
   finishedCar: (car: ICar) => void;
+  readyToStart: () => void;
+  allCarsFinished: () => void;
 }

@@ -8,4 +8,5 @@ export default interface IPanel {
   toggleDisableRaceBtn: ToggleDisablingBtnType;
   toggleDisableResetBtn: ToggleDisablingBtnType;
   toggleDisableGenerateBtn: ToggleDisablingBtnType;
+  toggleDisableCreateInput: ToggleDisablingBtnType;
 }
