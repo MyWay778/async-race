@@ -17,7 +17,7 @@ export default class App {
     this.store = new Store(this.view);
     this.controller = new Controller(this.store);
 
-    this.view.init(this.controller);
+    this.view.init(this.controller, this.store);
 
     this.controller.showCars();
   }

@@ -5,14 +5,20 @@ import {
   DriveModeStatusType,
   DriveSuccessType,
   EngineStatusType,
+  GetWinnersOrderType,
+  GetWinnersSortType,
   MovementCharacteristicsType,
-  ResponseGerCarsType,
+  ResponseGetCarsType,
+  ResponseGetWinnersType,
 } from './types';
 
 export default class Api implements IApi {
   constructor(private readonly baseUrl: string) {}
 
-  getCars = async (page = 1, carLimit = 7): Promise<ResponseGerCarsType> => {
+  getCar = async (carId: number): Promise<CarType> =>
+    (await fetch(`${this.baseUrl}garage/${carId}`)).json();
+
+  getCars = async (page = 1, carLimit = 7): Promise<ResponseGetCarsType> => {
     const response = await fetch(
       `${this.baseUrl}garage/?_page=${page}&_limit=${carLimit}`
     );
@@ -66,6 +72,22 @@ export default class Api implements IApi {
 
   getWinner = async (carId: CarIdType): Promise<WinnerType> =>
     (await fetch(`${this.baseUrl}winners/${carId}`)).json();
+
+  getWinners = async (
+    page = 1,
+    limit = 10,
+    sort: GetWinnersSortType = 'id',
+    order: GetWinnersOrderType = 'ASC'
+  ): Promise<ResponseGetWinnersType> => {
+    const response = await fetch(
+      `${this.baseUrl}winners?_page=${page}&_limit=${limit}&_sort=${sort}&_order=${order}`
+    );
+
+    return {
+      winners: await response.json(),
+      winnersCount: response.headers.get('X-Total-Count'),
+    };
+  };
 
   updateWinner = async (winner: WinnerType): Promise<WinnerType> =>
     (

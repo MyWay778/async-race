@@ -7,16 +7,35 @@ import { CarType, WinnerType } from './state/types';
 import IView from '../view/i_view';
 import disableUpdateCarInputHandler from './helpers/disable-update-car-input-handler';
 import noId from './constants';
+import {
+  StoreListenerType,
+  // SubscriberType,
+  WinnersStateListenerType,
+} from './types';
+import { WinnersState } from './state/i_winnersState';
 
 export default class Store implements IStore {
   state: State = {
     cars: [],
-    currentPage: 1,
+    currentGaragePage: 1,
     allCarsInGarage: 0,
     carsOnPageLimit: 7,
+    currentPage: 'garage',
+    winners: [],
+    winnersCount: '0',
+    winnersLimit: 10,
+    currentWinnersPage: 1,
+  };
+
+  winnersState: WinnersState = {
+    winners: [],
+    winnersCount: 5,
+    winnersLimit: 10,
+    currentWinnersPage: 1,
   };
 
   listeners: Array<(state: State) => void> = [];
+  winnersStateListeners: Array<WinnersStateListenerType> = [];
 
   constructor(private readonly view: IView) {
     this.view.subscriber = this.subscriber;
@@ -24,9 +43,24 @@ export default class Store implements IStore {
     // this.notify();
   }
 
-  notify = (): void => {
+  notify = (specificListener?: StoreListenerType): void => {
+    if (specificListener) {
+      specificListener(this.state);
+      return;
+    }
     this.listeners.forEach((listener) => listener(this.state));
-  }
+  };
+
+  // notifyWinnersListeners = (
+  //   specificListener?: WinnersStateListenerType
+  // ): void => {
+  //   if (specificListener) {
+  //     specificListener(this.winnersState);
+  //   }
+  //   this.winnersStateListeners.forEach((listener) =>
+  //     listener(this.winnersState)
+  //   );
+  // };
 
   changeState = <T extends keyof State, K extends State[T]>(
     prop: T,
@@ -36,11 +70,14 @@ export default class Store implements IStore {
     this.notify();
   };
 
-
-
-  subscriber = (listener: (state: State) => void): void => {
+  subscriber = (listener: StoreListenerType): void => {
     this.listeners.push(listener);
-    this.notify();
+    this.notify(listener);
+  };
+
+  subscribe = (listener: StoreListenerType): void => {
+    this.listeners.push(listener);
+    listener(this.state);
   };
 
   setCars = (cars: CarType[]): void => {

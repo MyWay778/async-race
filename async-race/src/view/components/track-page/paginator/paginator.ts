@@ -34,18 +34,18 @@ class Paginator extends BaseComponent implements IPaginator{
 
   listener = (state: State): void => {
     const maxPage = Math.ceil(state.allCarsInGarage / state.carsOnPageLimit);
-    const {currentPage} = state;
+    const {currentGaragePage} = state;
 
     this.toggleDisableBtn('all', elementStatus.disabled);
 
-    if ( currentPage === maxPage && maxPage !== 1) {
+    if ( currentGaragePage === maxPage && maxPage !== 1) {
       this.toggleDisableBtn('prev', elementStatus.undisabled);
     }
 
-    if ( currentPage < maxPage) {
+    if ( currentGaragePage < maxPage) {
       this.toggleDisableBtn('next', elementStatus.undisabled);
     }
-    if (currentPage > 1) {
+    if (currentGaragePage > 1) {
       this.toggleDisableBtn('prev', elementStatus.undisabled);
     }
   }

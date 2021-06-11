@@ -1,4 +1,5 @@
 import IController from '@controller/i_controller';
+import IStore from '@store/i_store';
 import { State } from '@store/state/i_state';
 import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
@@ -9,7 +10,7 @@ export default interface IView {
   subscriber: (listener: (state: State) => void) => void; 
   subscribe: () => void;
   
-  init: (controller: IController) => void;
+  init: (controller: IController, store: IStore) => void;
   showCars: (cars: CarType[]) => void;
   showCar: (car: CarType) => void;
   toggleDisableUpdateBtn: ToggleDisablingBtnType;

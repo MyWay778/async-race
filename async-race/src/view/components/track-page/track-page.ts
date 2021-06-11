@@ -4,7 +4,6 @@ import './track-page.scss';
 import BaseComponent from '../shared/base-component/base-component';
 // import Paginator from './paginator/paginator';
 import Car from './car/car';
-import { createPageNumberBlock, createTitleBlock } from './helpers';
 import ITrackPage from './i_track-page';
 import { TrackPageHandlersType } from './types';
 import IPanel from './panel/i_panel';

@@ -12,8 +12,10 @@ class BaseComponent implements IBaseComponent {
     }
   }
 
-  render(root: HTMLElement): void {
-    root.append(this.element);
+  render(root?: HTMLElement): void {
+    if (root) {
+      root.append(this.element);
+    }
   }
 }
 

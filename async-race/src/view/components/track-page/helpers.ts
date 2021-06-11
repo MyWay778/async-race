@@ -1,12 +1,12 @@
 import { TitleTupleType } from './types';
 
-export const createTitleBlock = (): TitleTupleType => {
+export const createTitleBlock = (titleText = 'Garage'): TitleTupleType => {
   const titleBlock = document.createElement('div');
   titleBlock.classList.add('garage-title');
 
   const title = document.createElement('h2');
   title.classList.add('garage-title__title');
-  title.innerHTML = 'Garage&nbsp;';
+  title.innerHTML = `${titleText}&nbsp;`;
 
   const carCount = document.createElement('span');
   carCount.classList.add('garage-title__count');

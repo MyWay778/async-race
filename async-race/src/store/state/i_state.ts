@@ -1,4 +1,4 @@
-import { CarType, WinnerType } from './types';
+import { AppPageType, CarType, WinnerType } from './types';
 
 export type State = {
   cars: Array<CarType>;
@@ -6,9 +6,14 @@ export type State = {
   winner?: WinnerType;
   raceStatus?: boolean;
   isPending?: boolean;
-  currentPage: number;
+  currentPage: AppPageType;
+  currentGaragePage: number;
   allCarsInGarage: number;
   carsOnPageLimit: number;
+  winners: WinnerType[];
+  winnersCount: string;
+  winnersLimit: number;
+  currentWinnersPage: number;
 };
 
 export type ChangeStatePropertyType = {

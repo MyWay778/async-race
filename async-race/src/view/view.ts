@@ -1,4 +1,5 @@
 import IController from '@controller/i_controller';
+import IStore from '@store/i_store';
 import { State } from '@store/state/i_state';
 import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
@@ -9,13 +10,16 @@ import {
 } from './components/track-page/helpers';
 import ITrackPage from './components/track-page/i_track-page';
 import Paginator from './components/track-page/paginator/paginator';
+import WinnerPage from './components/winner-page/winner-page';
 import IView from './i_view';
 
 export { IView };
 
 export default class View implements IView {
   private trackPage: ITrackPage;
+  private winnerPage: WinnerPage;
   private controller: IController;
+  private store: IStore;
   subscriber: (listener: (state: State) => void) => void;
   private rootEventHandler: MouseEventHandler;
   private paginator: Paginator;
@@ -32,15 +36,35 @@ export default class View implements IView {
     if (this.setTitleBlock) {
       this.setTitleBlock(String(state.allCarsInGarage));
     }
+
     if (this.setPageNumberBlock) {
-      this.setPageNumberBlock(String(state.currentPage));
+      this.setPageNumberBlock(String(state.currentGaragePage));
+    }
+    if (state.currentPage === 'winners') {
+      if (!this.root.contains(this.winnerPage.element)) {
+        this.trackPage.element.replaceWith(this.winnerPage.element);
+      }
+    } else if (state.currentPage === 'garage') {
+      if (!this.root.contains(this.trackPage?.element) && this.trackPage) {
+        this.winnerPage.element.replaceWith(this.trackPage.element);
+      }
     }
   };
 
-  init = (controller: IController): void => {
+  init = (controller: IController, store: IStore): void => {
     this.controller = controller;
+    this.store = store;
 
-    const header = new Header();
+    const header = new Header({
+      selectGaragePage: this.controller.selectPage.bind(
+        this.controller,
+        'garage'
+      ),
+      selectWinnersPage: this.controller.selectPage.bind(
+        this.controller,
+        'winners'
+      ),
+    });
     header.render(this.root);
 
     const trackPageHandlers = {
@@ -74,6 +98,8 @@ export default class View implements IView {
       pageNumberBlock
     );
     this.trackPage.render(this.root);
+
+    this.winnerPage = new WinnerPage(this.store);
   };
 
   showCars = (cars: CarType[]): void => {

@@ -4,6 +4,7 @@ import { ToggleDisablingBtnType } from './panel/types';
 
 
 export default interface ITrackPage extends IBaseComponent {
+  element: HTMLElement;
   showCars: (cars: CarType[], carAmount?: number) => void;
   showCar: (car: CarType, carAmount?: number) => void;
   toggleDisableUpdateBtn: ToggleDisablingBtnType;

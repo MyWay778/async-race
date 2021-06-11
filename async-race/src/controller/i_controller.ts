@@ -1,4 +1,4 @@
-import { CarType } from '@store/state/types';
+import { AppPageType, CarType } from '@store/state/types';
 import ICar from '@view/components/track-page/car/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 
@@ -16,4 +16,5 @@ export default interface IController {
   generateCars: () => void;
   nextPage: () => void;
   prevPage: () => void;
+  selectPage: (pageName: AppPageType) => void;
 }
