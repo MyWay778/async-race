@@ -22,14 +22,14 @@ export const rowTableItemCreator = (
   winner: WinnerTableType
 ): HTMLElement => {
   const row = document.createElement('tr');
-  row.classList.add('winner-table__row');
+  row.classList.add('winner-table__cell');
 
   const numberTd = document.createElement('td');
-  numberTd.classList.add('winner-table__color');
+  numberTd.classList.add('winner-table__cell');
   numberTd.textContent = number;
 
   const colorTd = document.createElement('td');
-  colorTd.classList.add('winner-table__color');
+  colorTd.classList.add('winner-table__cell', 'winner-table__cell_color');
   colorTd.innerHTML = `<svg width="99" height="37" viewBox="0 0 99 37"  xmlns="http://www.w3.org/2000/svg">
     <g id="car">
       <path d="M81.6902 21.156C85.8142 21.156 89.1582 24.499 89.1582 28.624C89.1582 28.942 89.1322 29.255 89.0922 29.562C88.6292 33.243 85.4962 36.09 81.6912 36.09C77.7832 36.09 74.5792 33.086 74.2542 29.26C74.2372 29.051 74.2232 28.838 74.2232 28.623C74.2222 24.499 77.5652 21.156 81.6902 21.156ZM85.4282 25.81L83.9062 27.333C84.0242 27.536 84.1172 27.755 84.1772 27.989H86.3232C86.2132 27.177 85.9022 26.435 85.4282 25.81ZM86.3332 29.282H84.1702C84.1092 29.512 84.0192 29.73 83.8992 29.93L85.4252 31.455C85.8982 30.835 86.2162 30.093 86.3332 29.282ZM82.3362 33.263C83.1452 33.15 83.8802 32.833 84.5022 32.364L82.9842 30.845C82.7842 30.962 82.5652 31.048 82.3362 31.108V33.263ZM82.3362 26.14C82.5712 26.202 82.7912 26.294 82.9962 26.415L84.5172 24.894C83.8922 24.419 83.1502 24.105 82.3362 23.992V26.14ZM81.0432 23.99C80.2292 24.103 79.4862 24.419 78.8622 24.893L80.3822 26.414C80.5862 26.293 80.8082 26.201 81.0422 26.139L81.0432 23.99ZM81.0432 33.261V31.109C80.8132 31.048 80.5962 30.963 80.3962 30.845L78.8772 32.364C79.4992 32.833 80.2352 33.148 81.0432 33.261ZM77.9512 31.462L79.4822 29.929C79.3622 29.728 79.2652 29.513 79.2042 29.283H77.0582C77.1722 30.091 77.4772 30.839 77.9512 31.462ZM79.2012 27.989C79.2622 27.755 79.3542 27.536 79.4722 27.333L77.9482 25.81C77.4772 26.435 77.1662 27.177 77.0542 27.99H79.2012V27.989Z"/>
@@ -40,15 +40,15 @@ export const rowTableItemCreator = (
   colorTd.style.fill = winner.color;
 
   const nameTd = document.createElement('td');
-  nameTd.classList.add('winner-table__name');
+  nameTd.classList.add('winner-table__cell');
   nameTd.textContent = winner.name;
 
   const winsTd = document.createElement('td');
-  winsTd.classList.add('winner-table__wins');
+  winsTd.classList.add('winner-table__cell');
   winsTd.textContent = String(winner.wins);
 
   const bestTimeTd = document.createElement('td');
-  bestTimeTd.classList.add('winner-table__bestTime');
+  bestTimeTd.classList.add('winner-table__cell');
   bestTimeTd.textContent = String(winner.bestTime);
 
   row.append(numberTd, colorTd, nameTd, winsTd, bestTimeTd);

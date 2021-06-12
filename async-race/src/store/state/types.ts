@@ -10,8 +10,8 @@ export type WinnerType = {
   id: number;
   name?: string,
   color?: string
-  wins: number;
-  time: number;
+  wins?: number;
+  time?: number;
 };
 
 export type AppPageType = 'garage' | 'winners';

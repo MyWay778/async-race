@@ -22,8 +22,7 @@ export default class Car extends BaseComponent implements ICar {
     private readonly color: string,
     private readonly handlers: CarHandlersType
   ) {
-    super('li');
-    this.element.classList.add('car');
+    super('li', 'car-list__car');
     this.init();
   }
 
@@ -113,7 +112,7 @@ export default class Car extends BaseComponent implements ICar {
     carPanel.classList.add('car-panel');
 
     this.selectBtn = document.createElement('button');
-    this.selectBtn.classList.add('car-panel__btn');
+    this.selectBtn.classList.add('car-panel__btn', 'car-panel__btn_select');
     this.selectBtn.textContent = 'Select';
     this.control.select = this.selectBtn;
     this.selectBtn.onclick = (e: MouseEvent) => {
@@ -126,7 +125,7 @@ export default class Car extends BaseComponent implements ICar {
     };
 
     this.removeBtn = document.createElement('button');
-    this.removeBtn.classList.add('car-panel__btn');
+    this.removeBtn.classList.add('car-panel__btn', 'car-panel__btn_remove');
     this.removeBtn.textContent = 'Remove';
     this.control.remove = this.removeBtn;
     this.removeBtn.onclick = () => {
@@ -151,13 +150,13 @@ export default class Car extends BaseComponent implements ICar {
 
     this.startBtn = document.createElement('button');
     this.startBtn.classList.add('car-track-engine-control__btn');
-    this.startBtn.textContent = 'A';
+    this.startBtn.textContent = '🏁';
     this.startBtn.onclick = this.startHandler;
     this.control.start = this.startBtn;
 
     this.stopBtn = document.createElement('button');
     this.stopBtn.classList.add('car-track-engine-control__btn');
-    this.stopBtn.textContent = 'B';
+    this.stopBtn.textContent = '⛔';
     this.stopBtn.disabled = true;
     this.stopBtn.onclick = this.stopHandler;
     this.control.stop = this.stopBtn;

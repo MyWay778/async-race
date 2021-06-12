@@ -4,6 +4,8 @@ import { State } from '@store/state/i_state';
 import { CarType } from '@store/state/types';
 import { MouseEventHandler } from '@store/types';
 import { Header, TrackPage } from './components/index';
+import IModal from './components/modal/i_modal';
+import Modal from './components/modal/modal';
 import {
   createPageNumberBlock,
   createTitleBlock,
@@ -25,6 +27,7 @@ export default class View implements IView {
   private paginator: Paginator;
   private setTitleBlock: (value: string) => void;
   private setPageNumberBlock: (value: string) => void;
+  private modal: IModal;
 
   constructor(private readonly root: HTMLElement) {}
 
@@ -50,6 +53,12 @@ export default class View implements IView {
       }
     }
     this.paginator?.change(state.currentGaragePage, state.allCarsInGarage, state.carsOnPageLimit);
+
+    if (state.showModal) {
+      this.modal.setMessage(state.modalData);
+      this.modal.show();
+    }
+
   };
 
   init = (controller: IController, store: IStore): void => {
@@ -103,6 +112,9 @@ export default class View implements IView {
       nextPageHandler: this.controller.nextWinnerPage,
       prevPageHandler: this.controller.prevWinnerPage
     });
+
+    this.modal = new Modal(this.controller.closeModal);
+    this.modal.render(this.root);
   };
 
   showCars = (cars: CarType[]): void => {

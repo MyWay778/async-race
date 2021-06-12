@@ -1,0 +1,45 @@
+.winner-table {
+  text-align: center;
+}
+
+.winner-table__head {
+  height: 50px;
+  width: 130px;
+  vertical-align: top;
+}
+.winner-table__cell {
+  padding: 5px 10px;
+}
+
+.winner-table__cell_color svg {
+  width: 60px;
+  height: 20px;
+}
+
+
+.winner-table__header_selected {
+  width: 130px;
+}
+
+.winner-table__button {
+  position: relative;
+  border: none;
+  background-color: inherit;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+}
+
+.winner-table__btn_clicked::after {
+  position: absolute;
+  right: -15px;
+  top: 0;
+  content: '\2193';
+  margin-left: 10px;
+}
+
+.winner-table__btn_upSort::after {
+  transform: rotate(180deg) translateY(-7px);
+}

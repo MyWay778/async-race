@@ -1,4 +1,5 @@
 import BaseComponent from '../base-component/base-component';
+import './button.scss';
 
 export default class Button extends BaseComponent {
   constructor(
@@ -7,7 +8,7 @@ export default class Button extends BaseComponent {
     clickHandler?: (e: MouseEvent) => void
   ) {
     super('button');
-    this.element.classList.add(...className);
+    this.element.className = `${className.join(' ')} button_default`;
     this.element.textContent = btnText;
     if (clickHandler) {
       this.element.onclick = clickHandler;

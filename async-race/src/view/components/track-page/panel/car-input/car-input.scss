@@ -1,0 +1,31 @@
+.car-input {
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.car-input__name {
+  background-color: inherit;
+  border: none;
+  border-bottom: 1px solid chartreuse;
+  color: chartreuse;
+  font-size: inherit;
+  letter-spacing: inherit;
+  font-family: inherit;
+  outline: none;
+}
+
+.car-input__name:disabled {
+  opacity: 0.5;
+}
+
+.car-input__color {
+  background-color: chartreuse;
+  border: none;
+  cursor: pointer;
+}
+
+.car-input__color:disabled {
+  opacity: 0.5;
+}

@@ -1,3 +1,7 @@
+.car-list__car {
+  margin-bottom: 20px;
+}
+
 .car-header {
   display: flex;
   column-gap: 10px;
@@ -5,18 +9,64 @@
 
 .car-track {
   display: flex;
+  position: relative;
   margin-top: 15px;
-  column-gap: 15px;
 }
 
 .car-track-car {
   flex-grow: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px dashed white;
   margin: 0;
+  margin-left: 10px;
   position: relative;
+  background: right -5px / contain no-repeat url('../../../../assets/images/finish.svg');
 }
 .car-track-car__image {
   position: absolute;
   left: 0;
   transform: translateX(0);
   will-change: left;
+}
+
+.car-panel__btn {
+  padding: 5px 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background-color: transparent;
+  color: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  border: none;
+  transition: color 0.2s, background-color 0.2s, opacity 0.2s;
+  font-family: 'VT323', Arial, Helvetica, sans-serif;
+}
+
+.car-panel__btn:hover {
+  color: white;
+}
+.car-panel__btn_remove:hover {
+  color: brown;
+}
+
+.car-panel__btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.car-track-engine-control {
+  height: 26px;
+  display: flex;
+  column-gap: 5px;
+}
+
+.car-track-engine-control__btn {
+  padding: 2px 5px;
+}
+
+.car-track__finish {
+  margin: 0;
+  width: 90px;
+  border-bottom: 1px dashed white;
 }

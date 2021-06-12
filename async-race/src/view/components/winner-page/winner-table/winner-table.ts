@@ -5,6 +5,7 @@ import {
   sortingFns,
 } from './helper';
 import { WinnerTableSortFnType, WinnerTableType } from './types';
+import './winner-table.scss';
 
 export default class WinnerTable extends BaseComponent {
   private readonly wingsBtn: HTMLButtonElement;

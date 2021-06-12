@@ -1,0 +1,24 @@
+.button_default {
+  padding: 5px 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background-color: transparent;
+  color: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  border: 1px solid chartreuse;
+  transition: color 0.2s, background-color 0.2s, opacity 0.2s;
+  font-family: 'VT323', Arial, Helvetica, sans-serif;
+}
+
+.button_default:disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.button_default:hover {
+  color: black;
+  background-color: chartreuse;
+}
+

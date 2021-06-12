@@ -111,6 +111,7 @@ export default class Api implements IApi {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          id: winner.id,
           wins: winner.wins,
           time: winner.time,
         }),

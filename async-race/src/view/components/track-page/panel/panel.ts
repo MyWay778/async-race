@@ -34,14 +34,14 @@ class Panel extends BaseComponent implements IPanel {
 
     this.raceBtn = new Button(
       'Race',
-      ['garage-panel__btn', 'async-race_btn'],
+      ['garage-panel__btn'],
       handlers.startRaceHandler
     );
     this.raceBtn.render(this.element);
 
     this.resetBtn = new Button(
       'Reset',
-      ['garage-panel__btn', 'async-race_btn'],
+      ['garage-panel__btn'],
       handlers.resetRaceHandler
     );
     this.resetBtn.toggleDisabling(elementStatus.disabled);
@@ -49,7 +49,7 @@ class Panel extends BaseComponent implements IPanel {
 
     this.generateBtn = new Button(
       'Generate',
-      ['garage-panel__btn', 'async-race_btn'],
+      ['garage-panel__btn'],
       handlers.generateCarsHandler
     );
     this.generateBtn.render(this.element);

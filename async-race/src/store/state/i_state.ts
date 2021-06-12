@@ -14,6 +14,8 @@ export type State = {
   winnersCount: string;
   winnersLimit: number;
   currentWinnersPage: number;
+  showModal: boolean;
+  modalData: string;
 };
 
 export type ChangeStatePropertyType = {

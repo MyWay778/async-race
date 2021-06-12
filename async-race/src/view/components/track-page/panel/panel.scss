@@ -1,3 +1,6 @@
 .garage-panel {
   padding: 0px;
 }
+.garage-panel__btn:nth-child(n+2) {
+  margin-left: 20px;
+}

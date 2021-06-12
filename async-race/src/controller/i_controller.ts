@@ -19,4 +19,5 @@ export default interface IController {
   selectPage: (pageName: AppPageType) => void;
   nextWinnerPage: ()  => void;
   prevWinnerPage: ()  => void;
+  closeModal: () => void;
 }

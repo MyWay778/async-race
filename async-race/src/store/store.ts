@@ -23,8 +23,10 @@ export default class Store implements IStore {
     currentPage: 'garage',
     winners: [],
     winnersCount: '0',
-    winnersLimit: 5,
+    winnersLimit: 10,
     currentWinnersPage: 1,
+    showModal: false,
+    modalData: ''
   };
 
   winnersState: WinnersState = {

@@ -1,4 +1,3 @@
-import { State } from '@store/state/i_state';
 import {
   AppPageType,
   CarIdType,
@@ -47,11 +46,11 @@ export default class Controller implements IController {
       newWinner.name = car.name;
       return newWinner;
     });
-    Promise.all(winnersForTable).then(result => {
+    Promise.all(winnersForTable).then((result) => {
       this.store.changeState('winnersCount', response.winnersCount);
       this.store.changeState('winners', result);
-    })
-  }
+    });
+  };
 
   showCars = async (): Promise<void> => {
     if (this.checkIsPendingAppStatus()) {
@@ -130,9 +129,10 @@ export default class Controller implements IController {
     if (!this.store.state.raceStatus || this.store.state.winner) {
       return;
     }
+    this.store.setWinner({ id: carId });
     const time = Number((movementTime / 1000).toFixed(2));
-    const winner = await this.api.getWinner(carId);
-    if (winner.id) {
+    const winner = await this.api.getWinner(this.store.state.winner.id);
+    if (winner.wins) {
       winner.wins += 1;
       if (time < winner.time) {
         winner.time = time;
@@ -141,23 +141,24 @@ export default class Controller implements IController {
       this.api.updateWinner(winner);
     } else {
       const newWinner: WinnerType = {
-        id: carId,
+        id: this.store.state.winner.id,
         wins: 1,
         time,
       };
       this.api.createWinner(newWinner);
       this.store.setWinner(newWinner);
     }
+    
+    const winnerForModal = this.store.state.cars.find(car => car.id === this.store.state.winner.id);
+    this.store.changeState('modalData', `Winner ${winnerForModal.name} time: ${this.store.state.winner.time}`);
+    this.store.changeState('showModal', true);
+
     this.store.state.raceStatus = false;
     this.store.state.winner = undefined;
   };
 
   startRace = (cars: ICar[]): void => {
-    // if (this.checkIsPendingAppStatus()) {
-    //   return;
-    // }
-
-    this.store.startRace();
+       this.store.startRace();
     cars.forEach((car) => {
       car.toggleDisableBtn('all', elementStatus.disabled);
     });
@@ -198,9 +199,6 @@ export default class Controller implements IController {
   };
 
   generateCars = async (): Promise<void> => {
-    // if (this.checkIsPendingAppStatus()) {
-    //   return;
-    // }
     this.store.carsGeneration();
     const cars = carGenerator();
     const requests = cars.map((car) => this.api.createCar(car));
@@ -212,27 +210,51 @@ export default class Controller implements IController {
   };
 
   nextPage = (): void => {
-    this.changePage('next', this.store.state.currentGaragePage, 'currentGaragePage');
+    this.changePage(
+      'next',
+      this.store.state.currentGaragePage,
+      'currentGaragePage'
+    );
     this.showCars();
   };
 
   prevPage = (): void => {
-    this.changePage('prev', this.store.state.currentGaragePage, 'currentGaragePage');
+    this.changePage(
+      'prev',
+      this.store.state.currentGaragePage,
+      'currentGaragePage'
+    );
     this.showCars();
   };
 
   nextWinnerPage = (): void => {
-    this.changePage('next', this.store.state.currentWinnersPage, 'currentWinnersPage');
+    this.changePage(
+      'next',
+      this.store.state.currentWinnersPage,
+      'currentWinnersPage'
+    );
     this.getWinners();
-  }
+  };
 
   prevWinnerPage = (): void => {
-    this.changePage('prev', this.store.state.currentWinnersPage, 'currentWinnersPage');
+    this.changePage(
+      'prev',
+      this.store.state.currentWinnersPage,
+      'currentWinnersPage'
+    );
     this.getWinners();
+  };
+
+  closeModal = (): void => {
+    this.store.changeState('showModal', false);
+    this.store.changeState('modalData', '');
   }
 
-
-  private changePage = <T extends StoreCurrentDataPageNumber>(direction: 'next' | 'prev', prevPageNumber: number, stateProperty: T): void => {
+  private changePage = <T extends StoreCurrentDataPageNumber>(
+    direction: 'next' | 'prev',
+    prevPageNumber: number,
+    stateProperty: T
+  ): void => {
     const count = direction === 'next' ? 1 : -1;
     const newPageNumber = prevPageNumber + count;
     this.store.changeState(stateProperty, newPageNumber);

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&family=VT323&display=swap');
+
 html {
   box-sizing: border-box;
 }
@@ -9,6 +11,8 @@ html {
 
 body {
   background-color: black;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
+  color: chartreuse;
+  font-family: 'Orbitron', Arial, Helvetica, sans-serif;
+  letter-spacing: 1px;
+  font-size: 18px;
 }
