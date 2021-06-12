@@ -1,4 +1,4 @@
-import { WinnerTableType } from './types';
+import { WinnerTableSortFnsType, WinnerTableType } from './types';
 
 export const headerRowItemCreator = (
   title: string,
@@ -54,3 +54,10 @@ export const rowTableItemCreator = (
   row.append(numberTd, colorTd, nameTd, winsTd, bestTimeTd);
   return row;
 };
+
+export const sortingFns: WinnerTableSortFnsType = {
+  sortWinsUp: (a, b) => a.wins - b.wins,
+  sortWinsDown: (a, b) => b.wins - a.wins,
+  sortBestTimeUp: (a, b) => a.bestTime - b.bestTime,
+  sortBestTimeDown: (a, b) => b.bestTime - a.bestTime,
+}
