@@ -17,4 +17,6 @@ export default interface IController {
   nextPage: () => void;
   prevPage: () => void;
   selectPage: (pageName: AppPageType) => void;
+  nextWinnerPage: ()  => void;
+  prevWinnerPage: ()  => void;
 }

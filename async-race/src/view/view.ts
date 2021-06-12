@@ -49,6 +49,7 @@ export default class View implements IView {
         this.winnerPage.element.replaceWith(this.trackPage.element);
       }
     }
+    this.paginator?.change(state.currentGaragePage, state.allCarsInGarage, state.carsOnPageLimit);
   };
 
   init = (controller: IController, store: IStore): void => {
@@ -89,7 +90,6 @@ export default class View implements IView {
     this.setPageNumberBlock = setPageNumberBlock;
 
     this.paginator = new Paginator(trackPageHandlers);
-    this.paginator.subscribe(this.subscriber);
 
     this.trackPage = new TrackPage(
       trackPageHandlers,
@@ -99,7 +99,10 @@ export default class View implements IView {
     );
     this.trackPage.render(this.root);
 
-    this.winnerPage = new WinnerPage(this.store);
+    this.winnerPage = new WinnerPage(this.store, {
+      nextPageHandler: this.controller.nextWinnerPage,
+      prevPageHandler: this.controller.prevWinnerPage
+    });
   };
 
   showCars = (cars: CarType[]): void => {

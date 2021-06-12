@@ -1,9 +1,11 @@
+import { State } from '@store/state/i_state';
 import {
   AppPageType,
   CarIdType,
   CarType,
   WinnerType,
 } from '@store/state/types';
+import { StoreCurrentDataPageNumber } from '@store/types';
 import ICar from '@view/components/track-page/car/i_car';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import elementStatus from '@view/components/track-page/panel/constants';
@@ -29,23 +31,27 @@ export default class Controller implements IController {
   selectPage = async (pageName: AppPageType): Promise<void> => {
     this.store.changeState('currentPage', pageName);
     if (pageName === 'winners') {
-      const response = await this.api.getWinners(
-        this.store.state.currentWinnersPage,
-        this.store.state.winnersLimit
-      );
-      const winnersForTable = response.winners.map(async (winner) => {
-        const car = await this.api.getCar(winner.id);
-        const newWinner = winner;
-        newWinner.color = car.color;
-        newWinner.name = car.name;
-        return newWinner;
-      });
-      Promise.all(winnersForTable).then(result => {
-        this.store.changeState('winnersCount', response.winnersCount);
-        this.store.changeState('winners', result);
-      })
+      this.getWinners();
     }
   };
+
+  getWinners = async (): Promise<void> => {
+    const response = await this.api.getWinners(
+      this.store.state.currentWinnersPage,
+      this.store.state.winnersLimit
+    );
+    const winnersForTable = response.winners.map(async (winner) => {
+      const car = await this.api.getCar(winner.id);
+      const newWinner = winner;
+      newWinner.color = car.color;
+      newWinner.name = car.name;
+      return newWinner;
+    });
+    Promise.all(winnersForTable).then(result => {
+      this.store.changeState('winnersCount', response.winnersCount);
+      this.store.changeState('winners', result);
+    })
+  }
 
   showCars = async (): Promise<void> => {
     if (this.checkIsPendingAppStatus()) {
@@ -206,18 +212,30 @@ export default class Controller implements IController {
   };
 
   nextPage = (): void => {
-    this.changePage('next');
+    this.changePage('next', this.store.state.currentGaragePage, 'currentGaragePage');
+    this.showCars();
   };
 
   prevPage = (): void => {
-    this.changePage('prev');
+    this.changePage('prev', this.store.state.currentGaragePage, 'currentGaragePage');
+    this.showCars();
   };
 
-  private changePage = (direction: 'next' | 'prev'): void => {
+  nextWinnerPage = (): void => {
+    this.changePage('next', this.store.state.currentWinnersPage, 'currentWinnersPage');
+    this.getWinners();
+  }
+
+  prevWinnerPage = (): void => {
+    this.changePage('prev', this.store.state.currentWinnersPage, 'currentWinnersPage');
+    this.getWinners();
+  }
+
+
+  private changePage = <T extends StoreCurrentDataPageNumber>(direction: 'next' | 'prev', prevPageNumber: number, stateProperty: T): void => {
     const count = direction === 'next' ? 1 : -1;
-    const newPageNumber = this.store.state.currentGaragePage + count;
-    this.store.changeState('currentGaragePage', newPageNumber);
-    this.showCars();
+    const newPageNumber = prevPageNumber + count;
+    this.store.changeState(stateProperty, newPageNumber);
   };
 
   private getMovementData = (car: ICar): Promise<MovementCharacteristicsType> =>

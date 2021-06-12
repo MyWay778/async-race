@@ -23,7 +23,7 @@ export default class Store implements IStore {
     currentPage: 'garage',
     winners: [],
     winnersCount: '0',
-    winnersLimit: 10,
+    winnersLimit: 5,
     currentWinnersPage: 1,
   };
 

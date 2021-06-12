@@ -15,3 +15,6 @@ export type SubscriberType = {
 };
 
 export type StoresType = State | WinnersState;
+
+
+export type StoreCurrentDataPageNumber = 'currentGaragePage' | 'currentWinnersPage';

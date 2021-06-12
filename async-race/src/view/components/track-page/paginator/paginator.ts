@@ -3,7 +3,6 @@ import BaseComponent from '../../shared/base-component/base-component';
 import IPaginator from './i_paginator';
 import './paginator.scss';
 import { PaginatorBtnNameType, PaginatorButtonsType, PaginatorHandlersType } from './types';
-import { State } from '../../../../store/state/i_state';
 import elementStatus from '../panel/constants';
 
 class Paginator extends BaseComponent implements IPaginator{
@@ -28,24 +27,19 @@ class Paginator extends BaseComponent implements IPaginator{
     this.buttons[btnName].toggleDisabling(isDisabled);
   }
 
-  subscribe = (subscriber: (listener: (state: State) => void) => void ): void => {
-    subscriber(this.listener);
-  }
-
-  listener = (state: State): void => {
-    const maxPage = Math.ceil(state.allCarsInGarage / state.carsOnPageLimit);
-    const {currentGaragePage} = state;
+  change = (currentPage: number, allItems: number, itemsLimit: number): void => {
+    const maxPage = Math.ceil(allItems / itemsLimit);
 
     this.toggleDisableBtn('all', elementStatus.disabled);
 
-    if ( currentGaragePage === maxPage && maxPage !== 1) {
+    if ( currentPage === maxPage && maxPage !== 1) {
       this.toggleDisableBtn('prev', elementStatus.undisabled);
     }
 
-    if ( currentGaragePage < maxPage) {
+    if ( currentPage < maxPage) {
       this.toggleDisableBtn('next', elementStatus.undisabled);
     }
-    if (currentGaragePage > 1) {
+    if (currentPage > 1) {
       this.toggleDisableBtn('prev', elementStatus.undisabled);
     }
   }
