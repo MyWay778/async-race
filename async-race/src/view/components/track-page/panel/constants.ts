@@ -1,6 +1,6 @@
 const elementStatus = {
   disabled: true,
-  undisabled: false
-}
+  undisabled: false,
+};
 
-export default elementStatus
+export default elementStatus;

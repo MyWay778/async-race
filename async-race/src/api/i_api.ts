@@ -1,4 +1,3 @@
-
 import { CarIdType, StoreCarType, WinnerType } from '@store/types';
 import {
   DriveModeStatusType,

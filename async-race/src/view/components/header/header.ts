@@ -12,8 +12,16 @@ class Header extends BaseComponent {
     this.element.classList.add('header');
     const nav = document.createElement('nav');
 
-    const garageBtn = new Button('garage', ['header__btn'], handlers.selectGaragePage);
-    const winnersBtn = new Button('winners', ['header__btn'], handlers.selectWinnersPage);
+    const garageBtn = new Button(
+      'garage',
+      ['header__btn'],
+      handlers.selectGaragePage
+    );
+    const winnersBtn = new Button(
+      'winners',
+      ['header__btn'],
+      handlers.selectWinnersPage
+    );
 
     nav.append(garageBtn.element, winnersBtn.element);
 

@@ -51,16 +51,18 @@ export default class Store implements IStore {
     prop: K,
     value: T
   ): void => {
-    console.log(this.state.garagePage.winner);
     this.state[state][prop] = value;
-    this.notify(state, (prop as never));
+    this.notify(state, prop as never);
   };
 
   getState = <T extends keyof StoreStateType>(
     stateName: T
   ): StoreStateType[T] => this.state[stateName];
 
-  private notify = <L extends keyof StoreListenersType>(listener: L, prop: never): void => {
-    this.listeners[listener].forEach(ltr => ltr(prop));
-  }
+  private notify = <L extends keyof StoreListenersType>(
+    listener: L,
+    prop: never
+  ): void => {
+    this.listeners[listener].forEach((ltr) => ltr(prop));
+  };
 }

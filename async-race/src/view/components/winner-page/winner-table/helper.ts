@@ -60,4 +60,4 @@ export const sortingFns: WinnerTableSortFnsType = {
   sortWinsDown: (a, b) => b.wins - a.wins,
   sortBestTimeUp: (a, b) => a.bestTime - b.bestTime,
   sortBestTimeDown: (a, b) => b.bestTime - a.bestTime,
-}
+};

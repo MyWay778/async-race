@@ -85,9 +85,14 @@ export default class Car extends BaseComponent implements ICar {
     this.startBtn.disabled = isDisabled;
   };
 
-  toggleDisableBtn = (button: CarBtnNameType | CarBtnNameType[], isDisabled: boolean): void => {
+  toggleDisableBtn = (
+    button: CarBtnNameType | CarBtnNameType[],
+    isDisabled: boolean
+  ): void => {
     if (button instanceof Array) {
-      button.forEach(btn => {this.control[btn].disabled = isDisabled});
+      button.forEach((btn) => {
+        this.control[btn].disabled = isDisabled;
+      });
     } else {
       if (button === 'all') {
         Object.values(this.control).forEach((btn) => {

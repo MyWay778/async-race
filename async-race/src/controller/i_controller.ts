@@ -14,7 +14,10 @@ export default interface IController {
   startRace: () => void;
   resetRace: () => void;
   generateCars: () => void;
-  changePaginationPage: (pageName: 'garage' | 'winners', direction: 'next' | 'prev') => void;
+  changePaginationPage: (
+    pageName: 'garage' | 'winners',
+    direction: 'next' | 'prev'
+  ) => void;
 
   // removeCar: (carId: number) => void;
   // selectUpdateCar: (car: CarType) => void;

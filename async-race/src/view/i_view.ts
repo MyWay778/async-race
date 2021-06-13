@@ -1,12 +1,9 @@
 export default interface IView {
   init: (root: HTMLElement) => void;
 
-
-
-  // subscriber: (listener: (state: State) => void) => void; 
+  // subscriber: (listener: (state: State) => void) => void;
   // subscribe: () => void;
-  
-  
+
   // showCars: (cars: CarType[]) => void;
   // showCar: (car: CarType) => void;
   // toggleDisableUpdateBtn: ToggleDisablingBtnType;

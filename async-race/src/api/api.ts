@@ -69,7 +69,11 @@ export default class Api implements IApi {
     status: DriveModeStatusType,
     signal?: AbortSignal
   ): Promise<DriveSuccessType> =>
-    (await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`, {signal})).json();
+    (
+      await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`, {
+        signal,
+      })
+    ).json();
 
   getWinner = async (carId: CarIdType): Promise<WinnerType> =>
     (await fetch(`${this.baseUrl}winners/${carId}`)).json();

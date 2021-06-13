@@ -6,10 +6,10 @@ const shuffle = <T>(array: Array<T>): Array<T> => {
   while (n) {
     i = Math.floor(Math.random() * n);
     n -= 1;
-    copy.push(array.splice(i,1)[0]);
+    copy.push(array.splice(i, 1)[0]);
   }
 
   return copy;
-}
+};
 
 export default shuffle;

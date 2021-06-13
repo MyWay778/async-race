@@ -1,5 +1,9 @@
 import IStore from '@store/i_store';
-import { StoreListenerType, StoreWinnersPageType, WinnerType } from '@store/types';
+import {
+  StoreListenerType,
+  StoreWinnersPageType,
+  WinnerType,
+} from '@store/types';
 import { createPageNumberBlock, createTitleBlock } from '../track-page/helpers';
 import Paginator from '../track-page/paginator/paginator';
 import { PaginatorHandlersType } from '../track-page/paginator/types';
@@ -48,7 +52,7 @@ export default class WinnerPage extends BaseComponent {
         this.winners = [];
       }
       this.winners = winnersState.winners;
-      this.updateWinnerTable()
+      this.updateWinnerTable();
     }
 
     if (propName === 'winnersCount') {

@@ -194,7 +194,7 @@ export default class Controller implements IController {
       this.store.changeState('garagePage', 'cars', cars);
       if (!garageState.raceStatus) {
         this.switchDriveMode(carId, this.abortController.signal)
-          .catch((e) => {
+          .catch(() => {
             car.movementData = null;
             this.store.changeState('garagePage', 'cars', cars);
           })

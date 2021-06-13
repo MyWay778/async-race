@@ -8,7 +8,6 @@ import {
 } from './types';
 import './car-input.scss';
 
-
 class CarInput extends BaseComponent implements ICarInput {
   readonly element: HTMLDivElement;
   private readonly btn: Button;
@@ -25,7 +24,7 @@ class CarInput extends BaseComponent implements ICarInput {
     this.colorInput.type = 'color';
     this.colorInput.classList.add('car-input__color');
     this.colorInput.value = '#ffffff';
-    
+
     this.btn = new Button(btnText, ['car-input__button']);
 
     // this.btn = document.createElement('button');
@@ -44,7 +43,7 @@ class CarInput extends BaseComponent implements ICarInput {
         color: this.colorInput.value || '#ffffff',
       };
       handler(newCar);
-      this.setValues({color: '', name: ''});
+      this.setValues({ color: '', name: '' });
     };
   }
 
@@ -55,7 +54,7 @@ class CarInput extends BaseComponent implements ICarInput {
 
   setValues = (values: CarInputValuesType): void => {
     this.nameInput.value = values?.name || '';
-    this.colorInput.value = values?.color ||  '#ffffff' ;
+    this.colorInput.value = values?.color || '#ffffff';
   };
 
   private checkDisabled = () => {
