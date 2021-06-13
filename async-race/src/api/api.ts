@@ -1,4 +1,4 @@
-import { CarIdType, CarType, WinnerType } from '@store/state/types';
+import { CarIdType, StoreCarType, WinnerType } from '@store/types';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
 import IApi from './i_api';
 import {
@@ -15,7 +15,7 @@ import {
 export default class Api implements IApi {
   constructor(private readonly baseUrl: string) {}
 
-  getCar = async (carId: number): Promise<CarType> =>
+  getCar = async (carId: number): Promise<StoreCarType> =>
     (await fetch(`${this.baseUrl}garage/${carId}`)).json();
 
   getCars = async (page = 1, carLimit = 7): Promise<ResponseGetCarsType> => {
@@ -28,7 +28,7 @@ export default class Api implements IApi {
     };
   };
 
-  createCar = async (car: CarInputType): Promise<CarType> =>
+  createCar = async (car: CarInputType): Promise<StoreCarType> =>
     (
       await fetch(`${this.baseUrl}garage/`, {
         method: 'POST',
@@ -44,7 +44,7 @@ export default class Api implements IApi {
       method: 'DELETE',
     });
 
-  updateCar = async (car: CarType): Promise<CarType> =>
+  updateCar = async (car: StoreCarType): Promise<StoreCarType> =>
     (
       await fetch(`${this.baseUrl}garage/${car.id}`, {
         method: 'PUT',
@@ -66,9 +66,10 @@ export default class Api implements IApi {
 
   driveMode = async (
     carId: CarIdType,
-    status: DriveModeStatusType
+    status: DriveModeStatusType,
+    signal?: AbortSignal
   ): Promise<DriveSuccessType> =>
-    (await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`)).json();
+    (await fetch(`${this.baseUrl}engine?id=${carId}&status=${status}`, {signal})).json();
 
   getWinner = async (carId: CarIdType): Promise<WinnerType> =>
     (await fetch(`${this.baseUrl}winners/${carId}`)).json();

@@ -3,7 +3,7 @@ import IModal from './i_modal';
 import './modal.scss';
 
 export default class Modal extends BaseComponent implements IModal {
-  constructor(private readonly closeModalHandler: () => void) {
+  constructor() {
     super('div', 'modal');
   }
   
@@ -16,7 +16,7 @@ export default class Modal extends BaseComponent implements IModal {
 
     document.body.addEventListener('click',() => {
       this.element.classList.remove('modal_visible');
-      this.closeModalHandler();
+      this.element.textContent = '';
     }, {once: true});
   }
  }

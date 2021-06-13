@@ -1,14 +1,11 @@
 import {
-  AppPageType,
   CarIdType,
-  CarType,
+  StoreAppPageType,
+  StoreCarType,
   WinnerType,
-} from '@store/state/types';
-import { StoreCurrentDataPageNumber } from '@store/types';
-import ICar from '@view/components/track-page/car/i_car';
+} from '@store/types';
 import { CarInputType } from '@view/components/track-page/panel/car-input/types';
-import elementStatus from '@view/components/track-page/panel/constants';
-import { EngineStatusType, MovementCharacteristicsType } from 'api/types';
+import { MovementCharacteristicsType } from 'api/types';
 import Api from '../api/api';
 import IStore from '../store/i_store';
 import carGenerator from './helpers/car-generator';
@@ -22,22 +19,48 @@ const baseUrl = 'http://localhost:3000/';
 
 export default class Controller implements IController {
   private readonly api;
+  private abortController;
 
   constructor(private readonly store: IStore) {
     this.api = new Api(baseUrl);
+    this.abortController = new AbortController();
   }
 
-  selectPage = async (pageName: AppPageType): Promise<void> => {
-    this.store.changeState('currentPage', pageName);
+  showCars = async (): Promise<void> => {
+    if (this.store.getState('global').isPending) {
+      return;
+    }
+    this.store.changeState('global', 'isPending', true);
+
+    const garageState = this.store.getState('garagePage');
+
+    const carsResponse = await this.api.getCars(
+      garageState.currentGaragePage,
+      garageState.carsGarageLimit
+    );
+
+    this.store.changeState('global', 'isPending', false);
+    this.store.changeState('garagePage', 'cars', carsResponse.cars);
+    this.store.changeState(
+      'garagePage',
+      'carsGarageCount',
+      Number(carsResponse.carsAmount)
+    );
+  };
+
+  selectPage = async (pageName: StoreAppPageType): Promise<void> => {
+    this.store.changeState('global', 'currentPage', pageName);
     if (pageName === 'winners') {
       this.getWinners();
     }
   };
 
   getWinners = async (): Promise<void> => {
+    const winnersState = this.store.getState('winnersPage');
+
     const response = await this.api.getWinners(
-      this.store.state.currentWinnersPage,
-      this.store.state.winnersLimit
+      winnersState.currentWinnersPage,
+      winnersState.winnersLimit
     );
     const winnersForTable = response.winners.map(async (winner) => {
       const car = await this.api.getCar(winner.id);
@@ -47,235 +70,278 @@ export default class Controller implements IController {
       return newWinner;
     });
     Promise.all(winnersForTable).then((result) => {
-      this.store.changeState('winnersCount', response.winnersCount);
-      this.store.changeState('winners', result);
+      this.store.changeState(
+        'winnersPage',
+        'winnersCount',
+        Number(response.winnersCount)
+      );
+      this.store.changeState('winnersPage', 'winners', result);
     });
   };
 
-  showCars = async (): Promise<void> => {
-    if (this.checkIsPendingAppStatus()) {
+  createCar = async (car: CarInputType): Promise<void> => {
+    if (this.store.getState('global').isPending) {
       return;
     }
-
-    try {
-      const carsResponse = await this.api.getCars(
-        this.store.state.currentGaragePage,
-        this.store.state.carsOnPageLimit
-      );
-      this.store.state.isPending = false;
-      this.store.setCars(carsResponse.cars);
-      this.store.changeState(
-        'allCarsInGarage',
-        Number(carsResponse.carsAmount)
-      );
-    } catch (e) {
-      this.store.setCars([]);
-    }
-  };
-
-  createCar = async (car: CarInputType): Promise<void> => {
     const createdCar = await this.api.createCar(car);
-    this.store.setCar(createdCar);
-  };
+    const garageState = this.store.getState('garagePage');
 
-  removeCar = async (carId: number): Promise<void> => {
-    const response = await this.api.deleteCar(carId);
-    if (response.status === 200) {
-      this.showCars();
+    if (garageState.cars.length < garageState.carsGarageLimit) {
+      this.store.changeState(
+        'garagePage',
+        'cars',
+        garageState.cars.concat(createdCar)
+      );
     }
-  };
-
-  selectUpdateCar = (car: CarType): void => {
-    this.store.setUpdatingCar(car);
+    this.store.changeState(
+      'garagePage',
+      'carsGarageCount',
+      garageState.carsGarageCount + 1
+    );
   };
 
   updateCar = async (car: CarInputType): Promise<void> => {
-    const updatingCarFromStore = this.store.getUpdatingCar();
+    if (this.store.getState('global').isPending) {
+      return;
+    }
 
-    if (!shallowCarEqual(updatingCarFromStore, car)) {
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
+
+    if (!shallowCarEqual(garageState.updatingCar, car)) {
       const response = await this.api.updateCar({
-        id: updatingCarFromStore.id,
+        id: garageState.updatingCar.id,
         name: car.name,
         color: car.color,
       });
 
-      this.store.updateCar(response);
-    } else {
-      this.store.disableUpdateCarInput();
+      const stateCar = cars.find((c) => c.id === response.id);
+      stateCar.name = response.name;
+      stateCar.color = response.color;
+
+      this.store.changeState('garagePage', 'cars', cars);
     }
+    this.store.changeState('garagePage', 'updatingCar', null);
   };
-
-  startCar = async (car: ICar): Promise<void> => {
-    car.toggleDisableBtn(['start', 'select', 'remove'], elementStatus.disabled);
-    this.store.readyToStart();
-    const movementData = await this.getMovementData(car);
-    this.store.startCar(car, movementData);
-    await this.setDriveMode(car);
-    this.store.finishedCar(car);
-    car.toggleDisableBtn(['select', 'remove'], elementStatus.undisabled);
-  };
-
-  stopCar = async (car: ICar): Promise<void> => {
-    const velocity = await this.requestCarEngine(car, 'stopped');
-    this.store.bringBackCar(car, velocity);
-  };
-
-  private requestCarEngine = async (
-    car: ICar,
-    status: EngineStatusType
-  ): Promise<MovementCharacteristicsType> => this.api.engine(car.id, status);
 
   finishCar = async (carId: CarIdType, movementTime: number): Promise<void> => {
-    if (!this.store.state.raceStatus || this.store.state.winner) {
+    const garageState = this.store.getState('garagePage');
+    let { cars } = garageState;
+
+    cars = cars.map((car) =>
+      car.id === carId ? { ...car, movementData: null } : car
+    );
+    const car = cars.find((c) => c.id === carId);
+    car.movementData = null;
+    this.store.changeState('garagePage', 'cars', cars);
+
+    if (!garageState.raceStatus || garageState.winner) {
       return;
     }
-    this.store.setWinner({ id: carId });
+
+    this.store.changeState('garagePage', 'winner', { id: carId });
+
     const time = Number((movementTime / 1000).toFixed(2));
-    const winner = await this.api.getWinner(this.store.state.winner.id);
+    const winner = await this.api.getWinner(carId);
     if (winner.wins) {
       winner.wins += 1;
       if (time < winner.time) {
         winner.time = time;
       }
-      this.store.setWinner(winner);
       this.api.updateWinner(winner);
+      winner.time = time;
+      this.store.changeState('garagePage', 'winner', winner);
     } else {
       const newWinner: WinnerType = {
-        id: this.store.state.winner.id,
+        id: carId,
         wins: 1,
         time,
       };
       this.api.createWinner(newWinner);
-      this.store.setWinner(newWinner);
+      this.store.changeState('garagePage', 'winner', winner);
     }
-    
-    const winnerForModal = this.store.state.cars.find(car => car.id === this.store.state.winner.id);
-    this.store.changeState('modalData', `Winner ${winnerForModal.name} time: ${this.store.state.winner.time}`);
-    this.store.changeState('showModal', true);
 
-    this.store.state.raceStatus = false;
-    this.store.state.winner = undefined;
+    const winnerForModal = garageState.cars.find((c) => c.id === carId);
+
+    this.store.changeState(
+      'global',
+      'modalData',
+      `Winner ${winnerForModal.name} time: ${time}`
+    );
+    this.store.changeState('global', 'showModal', true);
   };
 
-  startRace = (cars: ICar[]): void => {
-       this.store.startRace();
-    cars.forEach((car) => {
-      car.toggleDisableBtn('all', elementStatus.disabled);
-    });
-    const allCarsMovementData = cars.map((car) => this.getMovementData(car));
-    const allCarsFinishedResponses: Promise<void>[] = [];
-    Promise.allSettled(allCarsMovementData).then((data) => {
-      cars.forEach((car, ind) => {
-        const movementData = (
-          data[ind] as PromiseFulfilledResult<MovementCharacteristicsType>
-        ).value;
-        if (this.store.state.raceStatus) {
-          this.store.startCar(car, movementData);
-          allCarsFinishedResponses.push(this.setDriveMode(car));
-        }
+  startCar = async (carId: CarIdType): Promise<void> => {
+    if (
+      this.store.getState('garagePage').cars.find((car) => car.id === carId)
+        .isRace ||
+      this.store.getState('global').antiClickSpam
+    ) {
+      return;
+    }
+    this.store.changeState('global', 'isPending', true);
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
+
+    try {
+      const movementData = await this.getMovementData(carId);
+
+      const car = cars.find((c) => c.id === carId);
+      if (!garageState.raceStatus) {
+        car.isRace = true;
+      }
+      car.movementData = movementData;
+      this.store.changeState('garagePage', 'cars', cars);
+      if (!garageState.raceStatus) {
+        this.switchDriveMode(carId, this.abortController.signal)
+          .catch((e) => {
+            car.movementData = null;
+            this.store.changeState('garagePage', 'cars', cars);
+          })
+          .finally(() => {
+            car.movementData = null;
+            this.store.changeState('garagePage', 'cars', cars);
+            this.store.changeState('global', 'isPending', false);
+          });
+      }
+    } catch (e) {
+      this.api.engine(carId, 'stopped');
+    }
+  };
+
+  private switchDriveMode = async (
+    carId: CarIdType,
+    signal?: AbortSignal
+  ): Promise<void> => {
+    await this.api.driveMode(carId, 'drive', signal);
+  };
+
+  stopCar = async (carId: CarIdType): Promise<void> => {
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
+    const car = cars.find((c) => c.id === carId);
+
+    await this.api.engine(carId, 'stopped');
+
+    car.isRace = false;
+    car.movementData = null;
+    this.store.changeState('garagePage', 'cars', cars);
+  };
+
+  selectUpdateCar = (car: StoreCarType): void => {
+    if (this.store.getState('global').isPending) {
+      return;
+    }
+    this.store.changeState('garagePage', 'updatingCar', car);
+  };
+
+  private getMovementData = (
+    carId: CarIdType
+  ): Promise<MovementCharacteristicsType> => this.api.engine(carId, 'started');
+
+  removeCar = async (carId: number): Promise<void> => {
+    if (this.store.getState('global').isPending) {
+      return;
+    }
+    this.store.changeState('global', 'isPending', true);
+    const response = await this.api.deleteCar(carId);
+    if (response.status === 200) {
+      const garageState = this.store.getState('garagePage');
+      let { cars } = garageState;
+
+      cars = garageState.cars.filter((car) => car.id !== carId);
+      this.store.changeState('garagePage', 'cars', cars);
+    }
+    this.store.changeState('global', 'isPending', false);
+  };
+
+  startRace = (): void => {
+    if (
+      this.store.getState('global').isPending &&
+      this.store.getState('garagePage').cars.every((car) => !car.isRace)
+    ) {
+      return;
+    }
+    this.store.changeState('global', 'isPending', true);
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
+
+    this.store.changeState('garagePage', 'raceStatus', true);
+
+    this.store.changeState('garagePage', 'winner', null);
+    const allCarsStarted = cars.map((car) => this.startCar(car.id));
+    const raceIsFinished: Promise<void>[] = [];
+
+    Promise.allSettled(allCarsStarted).then(() => {
+      cars.forEach((c) => {
+        const copyCar = c;
+        const driveModeRequest = this.switchDriveMode(
+          copyCar.id,
+          this.abortController.signal
+        ).catch(() => {
+          copyCar.movementData = null;
+          this.store.changeState('garagePage', 'cars', cars);
+        });
+
+        raceIsFinished.push(driveModeRequest);
+        copyCar.isRace = true;
       });
-      Promise.allSettled(allCarsFinishedResponses).then(() => {
-        this.store.state.isPending = false;
-        this.store.allCarsFinished();
+
+      Promise.allSettled(raceIsFinished).then(() => {
+        this.store.changeState('global', 'isPending', false);
+        this.store.changeState('garagePage', 'raceStatus', false);
+        // this.store.changeState('garagePage', 'winner', null);
       });
+
+      this.store.changeState('garagePage', 'cars', cars);
     });
   };
 
-  resetRace = (cars: ICar[]): void => {
-    this.store.resetRace();
+  resetRace = (): void => {
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
 
-    cars.forEach((car) => this.stopCar);
+    const allCarsReset = cars.map((car) => this.stopCar(car.id));
 
-    const allCarsFinished = cars.map((car) => car.stopHandler());
-    Promise.allSettled(allCarsFinished).then(() => {
-      this.store.allCarsAreDropped();
-      cars.forEach((car) => {
-        car.toggleDisableBtn(
-          ['select', 'remove', 'start'],
-          elementStatus.undisabled
-        );
-      });
+    Promise.allSettled(allCarsReset).then(() => {
+      this.store.changeState('garagePage', 'raceStatus', false);
     });
   };
 
   generateCars = async (): Promise<void> => {
-    this.store.carsGeneration();
-    const cars = carGenerator();
-    const requests = cars.map((car) => this.api.createCar(car));
-    Promise.allSettled(requests).then(() => {
-      this.store.state.isPending = false;
-      this.store.carsGeneration(false);
-      this.showCars();
+    if (this.store.getState('global').isPending) {
+      return;
+    }
+    const newCars = carGenerator();
+    const allCarsGenerated: Promise<void>[] = [];
+    newCars.forEach(async (car) => {
+      allCarsGenerated.push(this.createCar(car));
     });
+    await Promise.allSettled(allCarsGenerated);
+    this.store.changeState('global', 'isPending', false);
   };
 
-  nextPage = (): void => {
-    this.changePage(
-      'next',
-      this.store.state.currentGaragePage,
-      'currentGaragePage'
-    );
-    this.showCars();
-  };
-
-  prevPage = (): void => {
-    this.changePage(
-      'prev',
-      this.store.state.currentGaragePage,
-      'currentGaragePage'
-    );
-    this.showCars();
-  };
-
-  nextWinnerPage = (): void => {
-    this.changePage(
-      'next',
-      this.store.state.currentWinnersPage,
-      'currentWinnersPage'
-    );
-    this.getWinners();
-  };
-
-  prevWinnerPage = (): void => {
-    this.changePage(
-      'prev',
-      this.store.state.currentWinnersPage,
-      'currentWinnersPage'
-    );
-    this.getWinners();
-  };
-
-  closeModal = (): void => {
-    this.store.changeState('showModal', false);
-    this.store.changeState('modalData', '');
-  }
-
-  private changePage = <T extends StoreCurrentDataPageNumber>(
-    direction: 'next' | 'prev',
-    prevPageNumber: number,
-    stateProperty: T
+  changePaginationPage = (
+    pageName: 'garage' | 'winners',
+    direction: 'next' | 'prev'
   ): void => {
     const count = direction === 'next' ? 1 : -1;
-    const newPageNumber = prevPageNumber + count;
-    this.store.changeState(stateProperty, newPageNumber);
-  };
-
-  private getMovementData = (car: ICar): Promise<MovementCharacteristicsType> =>
-    this.api.engine(car.id, 'started');
-
-  private setDriveMode = async (car: ICar): Promise<void> => {
-    try {
-      await this.api.driveMode(car.id, 'drive');
-    } catch (e) {
-      this.store.stopCar(car);
+    if (pageName === 'garage') {
+      const { currentGaragePage } = this.store.getState('garagePage');
+      this.store.changeState(
+        'garagePage',
+        'currentGaragePage',
+        currentGaragePage + count
+      );
+      this.showCars();
+    } else if (pageName === 'winners') {
+      const { currentWinnersPage } = this.store.getState('winnersPage');
+      this.store.changeState(
+        'winnersPage',
+        'currentWinnersPage',
+        currentWinnersPage + count
+      );
+      this.getWinners();
     }
-  };
-
-  private checkIsPendingAppStatus = (): boolean => {
-    if (this.store.state.isPending) {
-      return true;
-    }
-    this.store.state.isPending = true;
-    return false;
   };
 }

@@ -1,4 +1,4 @@
-import { CarType } from '@store/state/types';
+import { StoreCarType } from '@store/types';
 import Button from '../../shared/button/button';
 import BaseComponent from '../../shared/base-component/base-component';
 import CarInput from './car-input/car-input';
@@ -32,11 +32,14 @@ class Panel extends BaseComponent implements IPanel {
     this.update.element.dataset.type = 'update'; // To deactivate by clicking outside
     this.update.onclick = handlers.updateCarHandler;
 
-    this.raceBtn = new Button(
-      'Race',
-      ['garage-panel__btn'],
-      handlers.startRaceHandler
-    );
+    this.update.element.onclick = (e) => {
+      e.stopPropagation();
+    };
+
+    this.raceBtn = new Button('Race', ['garage-panel__btn'], () => {
+      this.raceBtn.toggleDisabling(elementStatus.disabled);
+      handlers.startRaceHandler();
+    });
     this.raceBtn.render(this.element);
 
     this.resetBtn = new Button(
@@ -73,9 +76,9 @@ class Panel extends BaseComponent implements IPanel {
 
   toggleDisableGenerateBtn = (isDisabled: boolean): void => {
     this.generateBtn.toggleDisabling(isDisabled);
-  }
+  };
 
-  setUpdateInputValues = (car: CarType): void => {
+  setUpdateInputValues = (car: StoreCarType): void => {
     this.update.setValues(car);
   };
 }

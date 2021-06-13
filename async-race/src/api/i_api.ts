@@ -1,4 +1,5 @@
-import { CarIdType, CarType, WinnerType } from '@store/state/types';
+
+import { CarIdType, StoreCarType, WinnerType } from '@store/types';
 import {
   DriveModeStatusType,
   DriveSuccessType,
@@ -8,9 +9,9 @@ import {
 } from './types';
 
 export default interface IApi {
-  getCar: (carId: number) => Promise<CarType>;
+  getCar: (carId: number) => Promise<StoreCarType>;
   getCars: (page: number, carLimit?: number) => Promise<ResponseGetCarsType>;
-  createCar: (car: CarType) => Promise<CarType>;
+  createCar: (car: StoreCarType) => Promise<StoreCarType>;
   deleteCar: (carId: number) => Promise<Response>;
   engine: (
     carId: CarIdType,

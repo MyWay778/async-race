@@ -1,8 +1,5 @@
 import IStore from '@store/i_store';
-import { State } from '@store/state/i_state';
-import { WinnerType } from '@store/state/types';
-import { StoreListenerType } from '@store/types';
-import { BaseComponent } from '../index';
+import { StoreListenerType, StoreWinnersPageType, WinnerType } from '@store/types';
 import { createPageNumberBlock, createTitleBlock } from '../track-page/helpers';
 import Paginator from '../track-page/paginator/paginator';
 import { PaginatorHandlersType } from '../track-page/paginator/types';
@@ -11,8 +8,9 @@ import IWinnerTable from './winner-table/i_winner-table';
 import { WinnerTableType } from './winner-table/types';
 import WinnerTable from './winner-table/winner-table';
 
+import { BaseComponent } from '../index';
+
 export default class WinnerPage extends BaseComponent {
-  private state: State;
   private winners: WinnerType[] = [];
   private winnersCount: string;
   private maxPage: number;
@@ -23,22 +21,17 @@ export default class WinnerPage extends BaseComponent {
 
   constructor(private readonly store: IStore, handlers: PaginatorHandlersType) {
     super('main', 'main');
-
     this.paginator = new Paginator(handlers);
-
     this.initialization();
-    this.store.subscribe(this.stateListener);
+    this.store.subscribe('winnersPage', this.stateListener);
   }
 
   initialization = (): void => {
     const [titleBlock, setTitleBlock] = createTitleBlock('Winners');
     this.setTitleBlock = setTitleBlock;
-
     const [pageNumberBlock, setPageNumberBlock] = createPageNumberBlock();
     this.setPageNumberBlock = setPageNumberBlock;
-
     this.winnerTable = new WinnerTable();
-
     this.element.append(
       titleBlock,
       pageNumberBlock,
@@ -47,35 +40,40 @@ export default class WinnerPage extends BaseComponent {
     );
   };
 
-  stateListener: StoreListenerType = (state: State): void => {
-    if (!this.state) {
-      this.state = state;
-      this.updateAll();
-      return;
+  stateListener: StoreListenerType = (propName): void => {
+    const winnersState = this.store.getState('winnersPage');
+
+    if (propName === 'winners') {
+      if (!this.winners.length) {
+        this.winners = [];
+      }
+      this.winners = winnersState.winners;
+      this.updateWinnerTable()
     }
 
-    if (this.winnersCount !== state.winnersCount) {
-      this.winnersCount = state.winnersCount;
+    if (propName === 'winnersCount') {
+      this.winnersCount = String(winnersState.winnersCount);
       this.updateWinnersCount();
     }
 
-    if (this.state.currentWinnersPage !== state.currentWinnersPage) {
-      this.updatePageNumberBlock();
+    if (propName === 'currentWinnersPage') {
+      this.updatePageNumberBlock(winnersState);
     }
 
-    if (this.winners !== state.winners) {
-      this.winners = state.winners;
-      this.updateWinnerTable();
+    if (propName === 'currentWinnersPage' || propName === 'winnersCount') {
+      this.paginator.change(
+        winnersState.currentWinnersPage,
+        Number(winnersState.winnersCount),
+        winnersState.winnersLimit
+      );
     }
-
-    this.paginator.change(state.currentWinnersPage, Number(state.winnersCount), state.winnersLimit);
   };
 
-  updatePageNumberBlock = (): void => {
+  updatePageNumberBlock = (winnersState: StoreWinnersPageType): void => {
     this.maxPage = Math.ceil(
-      Number(this.state.winnersCount) / this.state.winnersLimit
+      Number(winnersState.winnersCount) / winnersState.winnersLimit
     );
-    this.setPageNumberBlock(String(this.state.currentWinnersPage));
+    this.setPageNumberBlock(String(winnersState.currentWinnersPage));
   };
 
   updateWinnersCount = (): void => {
@@ -93,13 +91,6 @@ export default class WinnerPage extends BaseComponent {
       };
       winners.push(winnerForTable);
     });
-
     this.winnerTable.setWinners(winners);
-  };
-
-  updateAll = (): void => {
-    this.updatePageNumberBlock();
-    this.updateWinnersCount();
-    this.updateWinnerTable();
   };
 }

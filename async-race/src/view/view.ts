@@ -1,69 +1,27 @@
 import IController from '@controller/i_controller';
 import IStore from '@store/i_store';
-import { State } from '@store/state/i_state';
-import { CarType } from '@store/state/types';
-import { MouseEventHandler } from '@store/types';
+import { StoreListenerType } from '@store/types';
 import { Header, TrackPage } from './components/index';
-import IModal from './components/modal/i_modal';
-import Modal from './components/modal/modal';
-import {
-  createPageNumberBlock,
-  createTitleBlock,
-} from './components/track-page/helpers';
 import ITrackPage from './components/track-page/i_track-page';
-import Paginator from './components/track-page/paginator/paginator';
 import WinnerPage from './components/winner-page/winner-page';
 import IView from './i_view';
 
 export { IView };
 
 export default class View implements IView {
+  private root: HTMLElement;
   private trackPage: ITrackPage;
   private winnerPage: WinnerPage;
-  private controller: IController;
-  private store: IStore;
-  subscriber: (listener: (state: State) => void) => void;
-  private rootEventHandler: MouseEventHandler;
-  private paginator: Paginator;
-  private setTitleBlock: (value: string) => void;
-  private setPageNumberBlock: (value: string) => void;
-  private modal: IModal;
 
-  constructor(private readonly root: HTMLElement) {}
+  constructor(
+    private readonly controller: IController,
+    private readonly store: IStore
+  ) {}
 
-  subscribe = (): void => {
-    this.subscriber(this.viewListener);
-  };
+  init = (root: HTMLElement): void => {
+    this.root = root;
 
-  viewListener = (state: State): void => {
-    if (this.setTitleBlock) {
-      this.setTitleBlock(String(state.allCarsInGarage));
-    }
-
-    if (this.setPageNumberBlock) {
-      this.setPageNumberBlock(String(state.currentGaragePage));
-    }
-    if (state.currentPage === 'winners') {
-      if (!this.root.contains(this.winnerPage.element)) {
-        this.trackPage.element.replaceWith(this.winnerPage.element);
-      }
-    } else if (state.currentPage === 'garage') {
-      if (!this.root.contains(this.trackPage?.element) && this.trackPage) {
-        this.winnerPage.element.replaceWith(this.trackPage.element);
-      }
-    }
-    this.paginator?.change(state.currentGaragePage, state.allCarsInGarage, state.carsOnPageLimit);
-
-    if (state.showModal) {
-      this.modal.setMessage(state.modalData);
-      this.modal.show();
-    }
-
-  };
-
-  init = (controller: IController, store: IStore): void => {
-    this.controller = controller;
-    this.store = store;
+    this.store.subscribe('global', this.viewListener);
 
     const header = new Header({
       selectGaragePage: this.controller.selectPage.bind(
@@ -77,104 +35,37 @@ export default class View implements IView {
     });
     header.render(this.root);
 
-    const trackPageHandlers = {
-      createCarHandler: this.controller.createCar,
-      removeCarHandler: this.controller.removeCar,
-      selectCarHandler: this.controller.selectUpdateCar,
-      updateCarHandler: this.controller.updateCar,
-      startCarHandler: this.controller.startCar,
-      stopCarHandler: this.controller.stopCar,
-      finishedCarHandler: this.controller.finishCar,
-      startRaceHandler: this.controller.startRace,
-      resetRaceHandler: this.controller.resetRace,
-      generateCarsHandler: this.controller.generateCars,
-      nextPageHandler: this.controller.nextPage,
-      prevPageHandler: this.controller.prevPage,
-    };
+    this.trackPage = new TrackPage(this.store, this.controller);
 
-    const [titleBlock, setTitleBlock] = createTitleBlock();
-    this.setTitleBlock = setTitleBlock;
-
-    const [pageNumberBlock, setPageNumberBlock] = createPageNumberBlock();
-    this.setPageNumberBlock = setPageNumberBlock;
-
-    this.paginator = new Paginator(trackPageHandlers);
-
-    this.trackPage = new TrackPage(
-      trackPageHandlers,
-      this.paginator.element,
-      titleBlock,
-      pageNumberBlock
-    );
     this.trackPage.render(this.root);
-
+    this.trackPage.init();
     this.winnerPage = new WinnerPage(this.store, {
-      nextPageHandler: this.controller.nextWinnerPage,
-      prevPageHandler: this.controller.prevWinnerPage
+      nextPageHandler: this.controller.changePaginationPage.bind(
+        null,
+        'winners',
+        'next'
+      ),
+      prevPageHandler: this.controller.changePaginationPage.bind(
+        null,
+        'winners',
+        'prev'
+      ),
     });
-
-    this.modal = new Modal(this.controller.closeModal);
-    this.modal.render(this.root);
   };
 
-  showCars = (cars: CarType[]): void => {
-    this.trackPage.showCars(cars);
-  };
+  viewListener: StoreListenerType = (propName): void => {
+    if (propName === 'currentPage') {
+      const { currentPage } = this.store.getState('global');
 
-  showCar = (car: CarType): void => {
-    this.trackPage.showCar(car);
-  };
-
-  toggleDisableUpdateBtn = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableUpdateBtn(isDisabled);
-  };
-
-  toggleDisableCreateBtn = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableCreateBtn(isDisabled);
-  };
-
-  toggleDisableRaceBtn = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableRaceBtn(isDisabled);
-  };
-
-  toggleDisableResetBtn = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableResetBtn(isDisabled);
-  };
-
-  toggleDisableAllCarControl = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableAllCarControl(isDisabled);
-  };
-
-  setUpdateInputValues = (car: CarType): void => {
-    this.trackPage.setUpdateInputValues(car);
-  };
-
-  setEventListenerToRoot = (
-    handler: (e: MouseEvent) => void,
-    options?: AddEventListenerOptions
-  ): void => {
-    this.rootEventHandler = handler;
-    this.root.addEventListener('click', this.rootEventHandler, options);
-  };
-
-  removeEventListenerFromRoot = (): void => {
-    this.root.removeEventListener('click', this.rootEventHandler);
-    this.rootEventHandler = undefined;
-  };
-
-  startRace = (): void => {
-    this.trackPage.startAllCars();
-  };
-
-  resetRace = (): void => {
-    this.trackPage.resetAllCars();
-  };
-
-  setCarsAmount = (value: string): void => {
-    this.trackPage.setCarsAmount(value);
-  };
-
-  toggleDisableGenerateBtn = (isDisabled: boolean): void => {
-    this.trackPage.toggleDisableGenerateBtn(isDisabled);
+      if (currentPage === 'winners') {
+        if (!this.root.contains(this.winnerPage.element)) {
+          this.trackPage.element.replaceWith(this.winnerPage.element);
+        }
+      } else if (currentPage === 'garage') {
+        if (!this.root.contains(this.trackPage?.element) && this.trackPage) {
+          this.winnerPage.element.replaceWith(this.trackPage.element);
+        }
+      }
+    }
   };
 }

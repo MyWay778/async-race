@@ -1,4 +1,4 @@
-import { CarIdType, CarType } from '@store/state/types';
+import { CarIdType, StoreCarType } from '@store/types';
 import ICar from './i_car';
 
 export type CarHandlersType = {
@@ -10,8 +10,8 @@ export type CarHandlersType = {
 };
 
 export type RemoveCarHandlerType = (carId: number) => void;
-export type SelectCarHandlerType = (car: CarType) => void;
-export type UpdateCarHandlerType = (car: CarType) => void;
+export type SelectCarHandlerType = (car: StoreCarType) => void;
+export type UpdateCarHandlerType = (car: StoreCarType) => void;
 export type StartCarHandlerType = (car: ICar) => void;
 export type StopCarHandlerType = (car: ICar) => void;
 export type FinishedCarHandler = (carId: CarIdType ,movementTime: number) => void;

@@ -1,4 +1,4 @@
-import { CarType, WinnerType } from '@store/state/types';
+import { StoreCarType, WinnerType } from '@store/types';
 
 export type EngineStatusType = 'started' | 'stopped';
 export type MovementCharacteristicsType = {
@@ -11,13 +11,13 @@ export type DriveSuccessType = {
 };
 
 export type ResponseGetCarsType = {
-  cars: CarType[];
+  cars: StoreCarType[];
   carsAmount: string;
 };
 
-export type GetWinnersSortType = 'id' | 'wins' | 'time' ;
+export type GetWinnersSortType = 'id' | 'wins' | 'time';
 
-export type GetWinnersOrderType = 'ASC' | 'DESC' ;
+export type GetWinnersOrderType = 'ASC' | 'DESC';
 
 export type ResponseGetWinnersType = {
   winners: WinnerType[];

@@ -44,6 +44,7 @@ class CarInput extends BaseComponent implements ICarInput {
         color: this.colorInput.value || '#ffffff',
       };
       handler(newCar);
+      this.setValues({color: '', name: ''});
     };
   }
 
@@ -53,8 +54,8 @@ class CarInput extends BaseComponent implements ICarInput {
   };
 
   setValues = (values: CarInputValuesType): void => {
-    this.nameInput.value = values.name;
-    this.colorInput.value = values.color ||  '#fff' ;
+    this.nameInput.value = values?.name || '';
+    this.colorInput.value = values?.color ||  '#ffffff' ;
   };
 
   private checkDisabled = () => {
