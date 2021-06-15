@@ -91,3 +91,7 @@ export type WinnersState = {
   winnersLimit: number;
   currentWinnersPage: number;
 };
+
+export type StoreChangeStateOptionsType = {
+  notNotify: boolean;
+};

@@ -1,6 +1,6 @@
 import IStore from './i_store';
 
-import { StoreListenersType, StoreListenerType, StoreStateType } from './types';
+import { StoreChangeStateOptionsType, StoreListenersType, StoreListenerType, StoreStateType } from './types';
 
 export default class Store implements IStore {
   state: StoreStateType = {
@@ -49,11 +49,31 @@ export default class Store implements IStore {
   >(
     state: S,
     prop: K,
-    value: T
+    value: T,
+    options?: StoreChangeStateOptionsType
   ): void => {
+    console.log(this.state.garagePage.cars);
     this.state[state][prop] = value;
-    this.notify(state, prop as never);
+
+    if (!options?.notNotify) {
+      console.log('notify')
+      this.notify(state, prop as never);
+    }
   };
+
+  // changeStates = <
+  //   S extends keyof StoreStateType,
+  //   P extends keyof StoreStateType[S],
+  //   T extends StoreStateType[S],
+  //   V extends T[P]
+  // >(
+  //   state: S,
+  //   changer: { prop: P; value: V }[]
+  // ): void => {
+  //   changer.forEach( c => {
+  //     this.state[state][c.prop] = c.value;
+  //   })
+  // };
 
   getState = <T extends keyof StoreStateType>(
     stateName: T

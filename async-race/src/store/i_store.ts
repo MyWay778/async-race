@@ -1,4 +1,4 @@
-import { StoreListenerType, StoreStateType } from './types';
+import { StoreChangeStateOptionsType, StoreListenerType, StoreStateType } from './types';
 
 export default interface IStore {
   state: StoreStateType;
@@ -14,7 +14,8 @@ export default interface IStore {
   >(
     state: S,
     prop: K,
-    value: T
+    value: T,
+    options?: StoreChangeStateOptionsType
   ) => void;
   getState: <T extends keyof StoreStateType>(stateName: T) => StoreStateType[T];
 

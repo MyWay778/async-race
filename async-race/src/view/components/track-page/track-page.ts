@@ -87,14 +87,15 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
 
     if (propName === 'cars') {
       const { cars } = garageState;
-
       if (this.garage.length !== cars.length) {
         this.showCars();
       } else {
         cars.forEach((stateCar) => {
           const garageCar = this.garage.find((c) => c.id === stateCar.id);
           if (!garageCar) {
-            throw new Error('Car is not found in view garage');
+            this.showCars();
+            return;
+            // throw new Error('Car is not found in view garage');
           }
 
           if (

@@ -122,4 +122,7 @@ export default class Api implements IApi {
         }),
       })
     ).json();
+
+  deleteWinner = async (winnerId: number): Promise<Response> =>
+    fetch(`${this.baseUrl}winners/${winnerId}`, { method: 'DELETE' });
 }

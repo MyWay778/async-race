@@ -23,4 +23,5 @@ export default interface IApi {
   getWinner: (carId: CarIdType) => Promise<WinnerType>;
   updateWinner: (winner: WinnerType) => Promise<WinnerType>;
   createWinner: (winner: WinnerType) => Promise<WinnerType>;
+  deleteWinner: (carId: number) => Promise<Response>;
 }

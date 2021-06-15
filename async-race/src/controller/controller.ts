@@ -30,7 +30,7 @@ export default class Controller implements IController {
     if (this.store.getState('global').isPending) {
       return;
     }
-    this.store.changeState('global', 'isPending', true);
+    this.store.changeState('global', 'isPending', true , {notNotify: true});
 
     const garageState = this.store.getState('garagePage');
 
@@ -39,7 +39,7 @@ export default class Controller implements IController {
       garageState.carsGarageLimit
     );
 
-    this.store.changeState('global', 'isPending', false);
+    this.store.changeState('global', 'isPending', false, {notNotify: true});
     this.store.changeState('garagePage', 'cars', carsResponse.cars);
     this.store.changeState(
       'garagePage',
@@ -209,13 +209,6 @@ export default class Controller implements IController {
     }
   };
 
-  private switchDriveMode = async (
-    carId: CarIdType,
-    signal?: AbortSignal
-  ): Promise<void> => {
-    await this.api.driveMode(carId, 'drive', signal);
-  };
-
   stopCar = async (carId: CarIdType): Promise<void> => {
     const garageState = this.store.getState('garagePage');
     const { cars } = garageState;
@@ -243,16 +236,19 @@ export default class Controller implements IController {
     if (this.store.getState('global').isPending) {
       return;
     }
-    this.store.changeState('global', 'isPending', true);
+    // this.store.changeState('global', 'isPending', true);
     const response = await this.api.deleteCar(carId);
     if (response.status === 200) {
-      const garageState = this.store.getState('garagePage');
-      let { cars } = garageState;
+      // const garageState = this.store.getState('garagePage');
+      // let { cars } = garageState;
 
-      cars = garageState.cars.filter((car) => car.id !== carId);
-      this.store.changeState('garagePage', 'cars', cars);
+      // cars = garageState.cars.filter((car) => car.id !== carId);
+
+      this.api.deleteWinner(carId);
+      this.showCars();
+      // this.store.changeState('garagePage', 'cars', cars);
     }
-    this.store.changeState('global', 'isPending', false);
+    // this.store.changeState('global', 'isPending', false);
   };
 
   startRace = (): void => {
@@ -343,5 +339,12 @@ export default class Controller implements IController {
       );
       this.getWinners();
     }
+  };
+
+  private switchDriveMode = async (
+    carId: CarIdType,
+    signal?: AbortSignal
+  ): Promise<void> => {
+    await this.api.driveMode(carId, 'drive', signal);
   };
 }
