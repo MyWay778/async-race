@@ -1,7 +1,6 @@
 import { CarIdType, StoreCarType, WinnerType } from '@store/types';
 import {
   DriveModeStatusType,
-  DriveSuccessType,
   EngineStatusType,
   MovementCharacteristicsType,
   ResponseGetCarsType,
@@ -19,7 +18,7 @@ export default interface IApi {
   driveMode: (
     carId: CarIdType,
     status: DriveModeStatusType
-  ) => Promise<DriveSuccessType>;
+  ) => Promise<Response>;
   getWinner: (carId: CarIdType) => Promise<WinnerType>;
   updateWinner: (winner: WinnerType) => Promise<WinnerType>;
   createWinner: (winner: WinnerType) => Promise<WinnerType>;

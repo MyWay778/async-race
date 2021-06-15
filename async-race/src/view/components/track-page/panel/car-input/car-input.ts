@@ -27,10 +27,6 @@ class CarInput extends BaseComponent implements ICarInput {
 
     this.btn = new Button(btnText, ['car-input__button']);
 
-    // this.btn = document.createElement('button');
-    // this.btn.classList.add('car-input__button');
-    // this.btn.textContent = btnText;
-
     this.checkDisabled();
 
     this.element.append(this.nameInput, this.colorInput, this.btn.element);

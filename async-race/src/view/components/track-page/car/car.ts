@@ -1,10 +1,11 @@
 import IController from '@controller/i_controller';
 import BaseComponent from '../../shared/base-component/base-component';
+import elementStatus from '../panel/constants';
 import './car.scss';
 import carSvgImage from './constants';
 import createSvgCar from './helpers';
 import ICar from './i_car';
-import { CarBtnNameType, CarControlType } from './types';
+import { CarBlockBtnStatusType, CarBtnNameType, CarControlType } from './types';
 
 export default class Car extends BaseComponent implements ICar {
   private car: HTMLElement;
@@ -16,6 +17,13 @@ export default class Car extends BaseComponent implements ICar {
   private removeBtn: HTMLButtonElement;
   private control: CarControlType = {};
   status: 'started' | 'stopped' | 'ready' = 'ready';
+  readonly blockBtnStatus: CarBlockBtnStatusType = {
+    start: false,
+    stop: false,
+    select: false,
+    remove: false,
+    all: false,
+  }
 
   constructor(
     readonly id: number,
@@ -33,6 +41,9 @@ export default class Car extends BaseComponent implements ICar {
   };
 
   start = (movementTime: number): void => {
+    if (this.requestAnimationId) {
+      return;
+    }
     this.status = 'started';
     const start = performance.now();
     const animate = (time: number): void => {
@@ -43,12 +54,10 @@ export default class Car extends BaseComponent implements ICar {
 
       const progress = timeFraction;
       this.carImage.style.left = `${progress * 100}%`;
-
+      
       if (timeFraction < 1) {
         this.requestAnimationId = requestAnimationFrame(animate);
-      } else {
-        this.controller.finishCar(this.id, movementTime); // Check needed
-      }
+      } 
     };
     this.requestAnimationId = requestAnimationFrame(animate);
   };
@@ -68,7 +77,7 @@ export default class Car extends BaseComponent implements ICar {
   };
 
   startHandler = (): void => {
-    this.startBtn.disabled = true;
+    this.toggleDisableBtn('start', elementStatus.disabled);
     return this.controller.startCar(this.id);
   };
 
@@ -78,10 +87,12 @@ export default class Car extends BaseComponent implements ICar {
   };
 
   toggleStopBtn = (isDisabled: boolean): void => {
+    this.blockBtnStatus.stop = isDisabled;
     this.stopBtn.disabled = isDisabled;
   };
 
   toggleStartBtn = (isDisabled: boolean): void => {
+    this.blockBtnStatus.start = isDisabled;
     this.startBtn.disabled = isDisabled;
   };
 
@@ -91,6 +102,7 @@ export default class Car extends BaseComponent implements ICar {
   ): void => {
     if (button instanceof Array) {
       button.forEach((btn) => {
+        this.blockBtnStatus[btn] = isDisabled;
         this.control[btn].disabled = isDisabled;
       });
     } else {
@@ -101,6 +113,7 @@ export default class Car extends BaseComponent implements ICar {
         });
         return;
       }
+      this.blockBtnStatus[button] = isDisabled;
       this.control[button].disabled = isDisabled;
     }
   };

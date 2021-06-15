@@ -9,7 +9,6 @@ export default class Store implements IStore {
       showModal: false,
       modalData: '',
       isPending: false,
-      antiClickSpam: false,
     },
     garagePage: {
       cars: [],
@@ -52,27 +51,12 @@ export default class Store implements IStore {
     value: T,
     options?: StoreChangeStateOptionsType
   ): void => {
-    // console.log(this.state.garagePage.cars);
     this.state[state][prop] = value;
-
+    console.log(this.state.global);
     if (!options?.notNotify) {
       this.notify(state, prop as never);
     }
   };
-
-  // changeStates = <
-  //   S extends keyof StoreStateType,
-  //   P extends keyof StoreStateType[S],
-  //   T extends StoreStateType[S],
-  //   V extends T[P]
-  // >(
-  //   state: S,
-  //   changer: { prop: P; value: V }[]
-  // ): void => {
-  //   changer.forEach( c => {
-  //     this.state[state][c.prop] = c.value;
-  //   })
-  // };
 
   getState = <T extends keyof StoreStateType>(
     stateName: T

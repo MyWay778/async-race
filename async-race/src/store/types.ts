@@ -1,11 +1,10 @@
-import { MovementCharacteristicsType } from 'api/types';
-
 export type StoreCarType = {
   name: string;
   color: string;
   id: number;
   isRace?: boolean;
-  movementData?: MovementCharacteristicsType;
+  movementData?: number,
+  abortController?: AbortController,
 };
 
 export type CarIdType = number;

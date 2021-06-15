@@ -43,6 +43,7 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
       resetRaceHandler: this.controller.resetRace,
       generateCarsHandler: this.controller.generateCars,
     });
+    this.panel.toggleDisableResetBtn(elementStatus.disabled);
 
     const trackSection = document.createElement('section');
 
@@ -92,80 +93,61 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
       } else {
         cars.forEach((stateCar) => {
           const garageCar = this.garage.find((c) => c.id === stateCar.id);
-          if (!garageCar) {
-            this.showCars();
-            return;
-            // throw new Error('Car is not found in view garage');
+
+          if (stateCar.isRace || stateCar.movementData) {
+            this.panel.toggleDisableRaceBtn(elementStatus.disabled);
+            this.panel.toggleDisableResetBtn(elementStatus.undisabled);
+            this.panel.toggleDisableGenerateBtn(elementStatus.disabled);
+            this.panel.toggleDisableCreateInput(elementStatus.disabled);
+            garageCar.toggleDisableBtn('start', elementStatus.disabled);
+            garageCar.toggleDisableBtn('remove', elementStatus.disabled);
+            garageCar.toggleDisableBtn('select', elementStatus.disabled);
+            if (!garageState.raceStatus) {
+              garageCar.toggleDisableBtn('stop', elementStatus.undisabled);
+            }
+            this.paginator.toggleDisableBtn('next', elementStatus.disabled);
+            this.paginator.toggleDisableBtn('prev', elementStatus.disabled);
           }
 
           if (
-            garageCar.status === 'ready' &&
+            !stateCar.isRace &&
+            stateCar.movementData === null &&
+            !garageState.raceStatus
+          ) {
+            this.panel.toggleDisableRaceBtn(elementStatus.undisabled);
+            this.panel.toggleDisableResetBtn(elementStatus.disabled);
+            this.panel.toggleDisableGenerateBtn(elementStatus.undisabled);
+            this.panel.toggleDisableCreateInput(elementStatus.undisabled);
+            garageCar.toggleDisableBtn('start', elementStatus.undisabled);
+            garageCar.toggleDisableBtn('remove', elementStatus.undisabled);
+            garageCar.toggleDisableBtn('select', elementStatus.undisabled);
+            garageCar.toggleDisableBtn('stop', elementStatus.disabled);
+            this.paginator.change(garageState.currentGaragePage, garageState.carsGarageCount, garageState.carsGarageLimit);
+          }
+
+          if (!garageCar) {
+            this.showCars();
+            return;
+          }
+
+          if (
             stateCar.isRace &&
             stateCar.movementData
           ) {
-            const { movementData } = stateCar;
-            const movementTime = Math.round(
-              movementData.distance / movementData.velocity
-            );
-            garageCar.start(movementTime);
+            garageCar.start(stateCar.movementData);
           } else if (
-            garageCar.status === 'started' &&
             stateCar.isRace &&
-            !stateCar.movementData
+            stateCar.movementData === 0
           ) {
             garageCar.stop();
           } else if (
-            garageCar.status === 'stopped' &&
             !stateCar.isRace &&
-            !stateCar.movementData
+            stateCar.movementData === null
           ) {
             garageCar.comeBack();
             garageCar.status = 'ready';
           }
         });
-
-        this.garage.forEach((car) => {
-          if (car.status === 'ready') {
-            car.toggleStopBtn(elementStatus.disabled);
-            car.toggleStartBtn(elementStatus.undisabled);
-          } else if (car.status === 'started') {
-            car.toggleStopBtn(elementStatus.disabled);
-            car.toggleStartBtn(elementStatus.disabled);
-          } else if (car.status === 'stopped' && !garageState.raceStatus) {
-            car.toggleStopBtn(elementStatus.undisabled);
-            car.toggleStartBtn(elementStatus.disabled);
-          }
-        });
-
-        if (
-          this.garage.every((car) => car.status === 'ready') &&
-          !garageState.raceStatus
-        ) {
-          this.panel.toggleDisableRaceBtn(elementStatus.undisabled);
-          this.panel.toggleDisableResetBtn(elementStatus.disabled);
-        }
-
-        if (this.garage.every((car) => car.status === 'stopped')) {
-          this.panel.toggleDisableResetBtn(elementStatus.undisabled);
-        }
-
-        if (this.garage.some((car) => car.status === 'started')) {
-          this.panel.toggleDisableRaceBtn(elementStatus.disabled);
-          this.paginator.toggleDisableBtn('all', elementStatus.disabled);
-        }
-
-        if (this.garage.every((car) => car.status === 'ready')) {
-          this.paginator.change(
-            garageState.currentGaragePage,
-            garageState.carsGarageCount,
-            garageState.carsGarageLimit
-          );
-          this.panel.toggleDisableGenerateBtn(elementStatus.undisabled);
-          this.panel.toggleDisableCreateInput(elementStatus.undisabled);
-        } else {
-          this.panel.toggleDisableGenerateBtn(elementStatus.disabled);
-          this.panel.toggleDisableCreateInput(elementStatus.disabled);
-        }
       }
     }
 
@@ -205,6 +187,7 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
     }
 
     if (propName === 'winner') {
+      console.log(garageState.winner);
       if (garageState.winner?.time) {
         const winner = { ...garageState.winner };
         garageState.cars.forEach((car) => {

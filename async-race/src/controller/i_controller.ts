@@ -6,7 +6,6 @@ export default interface IController {
   selectPage: (pageName: StoreAppPageType) => void;
   createCar: (car: CarInputType) => void;
   updateCar: (car: CarInputType) => void;
-  finishCar: (carId: CarIdType, movementTime: number) => void;
   startCar: (carId: CarIdType) => void;
   stopCar: (carId: CarIdType) => void;
   selectUpdateCar: (car: StoreCarType) => void;
@@ -18,17 +17,4 @@ export default interface IController {
     pageName: 'garage' | 'winners',
     direction: 'next' | 'prev'
   ) => void;
-
-  // removeCar: (carId: number) => void;
-  // selectUpdateCar: (car: CarType) => void;
-  // startCar: (car: ICar) => void;
-  // startRace: (cars: ICar[]) => void;
-  // resetRace: (cars: ICar[]) => void;
-  // generateCars: () => void;
-  // nextPage: () => void;
-  // prevPage: () => void;
-  // selectPage: (pageName: AppPageType) => void;
-  // nextWinnerPage: ()  => void;
-  // prevWinnerPage: ()  => void;
-  // closeModal: () => void;
 }

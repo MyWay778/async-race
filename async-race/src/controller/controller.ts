@@ -19,18 +19,16 @@ const baseUrl = 'http://localhost:3000/';
 
 export default class Controller implements IController {
   private readonly api;
-  private abortController;
 
   constructor(private readonly store: IStore) {
     this.api = new Api(baseUrl);
-    this.abortController = new AbortController();
   }
 
   showCars = async (): Promise<void> => {
     if (this.store.getState('global').isPending) {
       return;
     }
-    this.store.changeState('global', 'isPending', true , {notNotify: true});
+    this.store.changeState('global', 'isPending', true, { notNotify: true });
 
     const garageState = this.store.getState('garagePage');
 
@@ -39,7 +37,7 @@ export default class Controller implements IController {
       garageState.carsGarageLimit
     );
 
-    this.store.changeState('global', 'isPending', false, {notNotify: true});
+    this.store.changeState('global', 'isPending', false, { notNotify: true });
     this.store.changeState('garagePage', 'cars', carsResponse.cars);
     this.store.changeState(
       'garagePage',
@@ -124,25 +122,8 @@ export default class Controller implements IController {
     this.store.changeState('garagePage', 'updatingCar', null);
   };
 
-  finishCar = async (carId: CarIdType, movementTime: number): Promise<void> => {
-    const garageState = this.store.getState('garagePage');
-    let { cars } = garageState;
-
-    cars = cars.map((car) =>
-      car.id === carId ? { ...car, movementData: null } : car
-    );
-    const car = cars.find((c) => c.id === carId);
-    car.movementData = null;
-    this.store.changeState('garagePage', 'cars', cars);
-
-    if (!garageState.raceStatus || garageState.winner) {
-      return;
-    }
-
-    const time = Number((movementTime / 1000).toFixed(2));
-    this.store.changeState('garagePage', 'winner', { id: carId, time });
-
-    const winner = await this.api.getWinner(carId);
+  setWinner = async (car: StoreCarType, time: number): Promise<void> => {
+    const winner = await this.api.getWinner(car.id);
     if (winner.wins) {
       winner.wins += 1;
       if (time < winner.time) {
@@ -150,75 +131,68 @@ export default class Controller implements IController {
       }
       this.api.updateWinner(winner);
       winner.time = time;
-      // this.store.changeState('garagePage', 'winner', winner);
     } else {
       const newWinner: WinnerType = {
-        id: carId,
+        id: car.id,
         wins: 1,
         time,
       };
       this.api.createWinner(newWinner);
-      // this.store.changeState('garagePage', 'winner', winner);
     }
-
-    const winnerForModal = garageState.cars.find((c) => c.id === carId);
-
-    // this.store.changeState(
-    //   'global',
-    //   'modalData',
-    //   `Winner ${winnerForModal.name} time: ${time}`
-    // );
-    // this.store.changeState('global', 'showModal', true);
   };
 
   startCar = async (carId: CarIdType): Promise<void> => {
-    if (
-      this.store.getState('garagePage').cars.find((car) => car.id === carId)
-        .isRace ||
-      this.store.getState('global').antiClickSpam
-    ) {
+    const garageState = this.store.getState('garagePage');
+    const car = garageState.cars.find((c) => c.id === carId);
+
+    if (car.isRace) {
       return;
     }
-    this.store.changeState('global', 'isPending', true);
-    const garageState = this.store.getState('garagePage');
+
+    this.store.changeState('global', 'isPending', true, { notNotify: true });
+
     const { cars } = garageState;
 
-    try {
-      const movementData = await this.getMovementData(carId);
+    const movementData = await this.getMovementData(carId);
 
-      const car = cars.find((c) => c.id === carId);
-      if (!garageState.raceStatus) {
-        car.isRace = true;
-      }
-      car.movementData = movementData;
+    if (!garageState.raceStatus) {
+      car.isRace = true;
+    }
+
+    car.movementData = Math.round(
+      movementData.distance / movementData.velocity
+    );
+
+    this.store.changeState('garagePage', 'cars', cars);
+
+    if (!garageState.raceStatus) {
+      await this.setToDriveMode(car);
       this.store.changeState('garagePage', 'cars', cars);
-      if (!garageState.raceStatus) {
-        this.switchDriveMode(carId, this.abortController.signal)
-          .catch(() => {
-            car.movementData = null;
-            this.store.changeState('garagePage', 'cars', cars);
-          })
-          .finally(() => {
-            car.movementData = null;
-            this.store.changeState('garagePage', 'cars', cars);
-            this.store.changeState('global', 'isPending', false);
-          });
-      }
-    } catch (e) {
-      this.api.engine(carId, 'stopped');
     }
   };
+
+
 
   stopCar = async (carId: CarIdType): Promise<void> => {
     const garageState = this.store.getState('garagePage');
     const { cars } = garageState;
     const car = cars.find((c) => c.id === carId);
 
+    if (car.abortController) {
+      car.abortController?.abort();
+      car.abortController= new AbortController();
+    }
+    
+    if (car.movementData !== 0) {
+      car.movementData = 0;
+      this.store.changeState('garagePage', 'cars', cars);
+    } 
+  
     await this.api.engine(carId, 'stopped');
-
     car.isRace = false;
     car.movementData = null;
     this.store.changeState('garagePage', 'cars', cars);
+    this.store.changeState('global','isPending', false, {notNotify: true});
   };
 
   selectUpdateCar = (car: StoreCarType): void => {
@@ -228,68 +202,80 @@ export default class Controller implements IController {
     this.store.changeState('garagePage', 'updatingCar', car);
   };
 
-  private getMovementData = (
-    carId: CarIdType
-  ): Promise<MovementCharacteristicsType> => this.api.engine(carId, 'started');
-
+  
   removeCar = async (carId: number): Promise<void> => {
     if (this.store.getState('global').isPending) {
       return;
     }
-    // this.store.changeState('global', 'isPending', true);
     const response = await this.api.deleteCar(carId);
     if (response.status === 200) {
-      // const garageState = this.store.getState('garagePage');
-      // let { cars } = garageState;
-
-      // cars = garageState.cars.filter((car) => car.id !== carId);
-
       this.api.deleteWinner(carId);
       this.showCars();
-      // this.store.changeState('garagePage', 'cars', cars);
     }
-    // this.store.changeState('global', 'isPending', false);
   };
 
   startRace = (): void => {
+    const garageState = this.store.getState('garagePage');
+    const { cars } = garageState;
+    let isFail = false;
+
     if (
       this.store.getState('global').isPending &&
-      this.store.getState('garagePage').cars.every((car) => !car.isRace)
+      cars.every((car) => !car.isRace)
     ) {
       return;
     }
-    this.store.changeState('global', 'isPending', true);
-    const garageState = this.store.getState('garagePage');
-    const { cars } = garageState;
 
+    this.store.changeState('global', 'isPending', true, { notNotify: true });
     this.store.changeState('garagePage', 'raceStatus', true);
+    this.store.changeState('garagePage', 'winner', null, { notNotify: true });
 
-    this.store.changeState('garagePage', 'winner', null);
-    const allCarsStarted = cars.map((car) => this.startCar(car.id));
+    const allСarGetMovementData = cars.map((car) => {
+      if (car.isRace) {
+        isFail = true;
+      }
+      return this.startCar(car.id);
+    });
+
+    if (isFail) {
+      return;
+    }
+
     const raceIsFinished: Promise<void>[] = [];
 
-    Promise.allSettled(allCarsStarted).then(() => {
+    Promise.allSettled(allСarGetMovementData).then(() => {
       cars.forEach((c) => {
         const copyCar = c;
-        const driveModeRequest = this.switchDriveMode(
-          copyCar.id,
-          this.abortController.signal
-        ).catch(() => {
-          copyCar.movementData = null;
-          this.store.changeState('garagePage', 'cars', cars);
-        });
+        const time = copyCar.movementData;
+
+        copyCar.isRace = true;
+
+        const driveModeRequest = this.setToDriveMode(copyCar)
+          .then(async (response) => {
+            if (response.status === 200 && !garageState.winner) {
+              const timeInSec = Number((time / 1000).toFixed(2));
+              this.store.changeState('garagePage', 'winner', {
+                ...copyCar,
+                time: timeInSec,
+              });
+              await this.setWinner(copyCar, timeInSec);
+            }
+          })
+          .finally(() => {
+            this.store.changeState('garagePage', 'cars', cars);
+          });
 
         raceIsFinished.push(driveModeRequest);
-        copyCar.isRace = true;
-      });
-
-      Promise.allSettled(raceIsFinished).then(() => {
-        this.store.changeState('global', 'isPending', false);
-        this.store.changeState('garagePage', 'raceStatus', false);
-        // this.store.changeState('garagePage', 'winner', null);
       });
 
       this.store.changeState('garagePage', 'cars', cars);
+
+      Promise.allSettled(raceIsFinished).then(() => {
+        this.store.changeState('global', 'isPending', false, {
+          notNotify: true,
+        });
+        this.store.changeState('garagePage', 'raceStatus', false);
+      });
     });
   };
 
@@ -341,10 +327,30 @@ export default class Controller implements IController {
     }
   };
 
-  private switchDriveMode = async (
-    carId: CarIdType,
-    signal?: AbortSignal
-  ): Promise<void> => {
-    await this.api.driveMode(carId, 'drive', signal);
+  private setToDriveMode = async (car: StoreCarType): Promise<Response> => {
+    const copyCar = car;
+    let response: Response;
+
+    copyCar.abortController = new AbortController;
+    try {
+      response = await this.api.driveMode(
+        car.id,
+        'drive',
+        copyCar.abortController.signal
+      );
+      if (response.status === 404) {
+        copyCar.isRace = false;
+      }
+      copyCar.movementData = 0;
+    } catch (e) {
+      if (e.code === 20) {
+        copyCar.movementData = 0;
+      }
+    } 
+    return response;
   };
+
+  private getMovementData = (
+    carId: CarIdType
+  ): Promise<MovementCharacteristicsType> => this.api.engine(carId, 'started');
 }
