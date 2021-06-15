@@ -171,8 +171,6 @@ export default class Controller implements IController {
     }
   };
 
-
-
   stopCar = async (carId: CarIdType): Promise<void> => {
     const garageState = this.store.getState('garagePage');
     const { cars } = garageState;
@@ -180,19 +178,19 @@ export default class Controller implements IController {
 
     if (car.abortController) {
       car.abortController?.abort();
-      car.abortController= new AbortController();
+      car.abortController = new AbortController();
     }
-    
+
     if (car.movementData !== 0) {
       car.movementData = 0;
       this.store.changeState('garagePage', 'cars', cars);
-    } 
-  
+    }
+
     await this.api.engine(carId, 'stopped');
     car.isRace = false;
     car.movementData = null;
     this.store.changeState('garagePage', 'cars', cars);
-    this.store.changeState('global','isPending', false, {notNotify: true});
+    this.store.changeState('global', 'isPending', false, { notNotify: true });
   };
 
   selectUpdateCar = (car: StoreCarType): void => {
@@ -202,7 +200,6 @@ export default class Controller implements IController {
     this.store.changeState('garagePage', 'updatingCar', car);
   };
 
-  
   removeCar = async (carId: number): Promise<void> => {
     if (this.store.getState('global').isPending) {
       return;
@@ -331,7 +328,7 @@ export default class Controller implements IController {
     const copyCar = car;
     let response: Response;
 
-    copyCar.abortController = new AbortController;
+    copyCar.abortController = new AbortController();
     try {
       response = await this.api.driveMode(
         car.id,
@@ -346,7 +343,7 @@ export default class Controller implements IController {
       if (e.code === 20) {
         copyCar.movementData = 0;
       }
-    } 
+    }
     return response;
   };
 

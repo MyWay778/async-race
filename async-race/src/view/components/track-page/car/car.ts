@@ -23,7 +23,7 @@ export default class Car extends BaseComponent implements ICar {
     select: false,
     remove: false,
     all: false,
-  }
+  };
 
   constructor(
     readonly id: number,
@@ -54,10 +54,10 @@ export default class Car extends BaseComponent implements ICar {
 
       const progress = timeFraction;
       this.carImage.style.left = `${progress * 100}%`;
-      
+
       if (timeFraction < 1) {
         this.requestAnimationId = requestAnimationFrame(animate);
-      } 
+      }
     };
     this.requestAnimationId = requestAnimationFrame(animate);
   };
@@ -102,19 +102,34 @@ export default class Car extends BaseComponent implements ICar {
   ): void => {
     if (button instanceof Array) {
       button.forEach((btn) => {
-        this.blockBtnStatus[btn] = isDisabled;
-        this.control[btn].disabled = isDisabled;
+        if (isDisabled && !this.control[btn].disabled) {
+          this.blockBtnStatus[btn] = isDisabled;
+          this.control[btn].disabled = isDisabled;
+        } else if (!isDisabled && this.control[btn].disabled) {
+          this.blockBtnStatus[btn] = isDisabled;
+          this.control[btn].disabled = isDisabled;
+        }
       });
     } else {
       if (button === 'all') {
         Object.values(this.control).forEach((btn) => {
           const btnCopy = btn; // For Lint
-          btnCopy.disabled = isDisabled;
+          if (
+            (isDisabled && !btnCopy.disabled) ||
+            (!isDisabled && btnCopy.disabled)
+          ) {
+            btnCopy.disabled = isDisabled;
+          }
         });
         return;
       }
-      this.blockBtnStatus[button] = isDisabled;
-      this.control[button].disabled = isDisabled;
+      if (
+        (isDisabled && !this.control[button].disabled) ||
+        (!isDisabled && this.control[button].disabled)
+      ) {
+        this.blockBtnStatus[button] = isDisabled;
+        this.control[button].disabled = isDisabled;
+      }
     }
   };
 

@@ -54,11 +54,11 @@ class CarInput extends BaseComponent implements ICarInput {
   };
 
   private checkDisabled = () => {
-    if (this.isDisabled) {
+    if (this.isDisabled && !this.nameInput.disabled) {
       this.nameInput.disabled = true;
       this.colorInput.disabled = true;
       (this.btn.element as HTMLButtonElement).disabled = true;
-    } else {
+    } else if (!this.isDisabled && this.nameInput.disabled) {
       this.nameInput.disabled = false;
       this.colorInput.disabled = false;
       (this.btn.element as HTMLButtonElement).disabled = false;

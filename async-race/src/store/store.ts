@@ -1,6 +1,11 @@
 import IStore from './i_store';
 
-import { StoreChangeStateOptionsType, StoreListenersType, StoreListenerType, StoreStateType } from './types';
+import {
+  StoreChangeStateOptionsType,
+  StoreListenersType,
+  StoreListenerType,
+  StoreStateType,
+} from './types';
 
 export default class Store implements IStore {
   state: StoreStateType = {
@@ -52,7 +57,6 @@ export default class Store implements IStore {
     options?: StoreChangeStateOptionsType
   ): void => {
     this.state[state][prop] = value;
-    console.log(this.state.global);
     if (!options?.notNotify) {
       this.notify(state, prop as never);
     }

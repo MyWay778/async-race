@@ -1,4 +1,8 @@
-import { StoreChangeStateOptionsType, StoreListenerType, StoreStateType } from './types';
+import {
+  StoreChangeStateOptionsType,
+  StoreListenerType,
+  StoreStateType,
+} from './types';
 
 export default interface IStore {
   state: StoreStateType;

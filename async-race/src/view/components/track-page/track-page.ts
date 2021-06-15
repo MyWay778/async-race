@@ -122,7 +122,11 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
             garageCar.toggleDisableBtn('remove', elementStatus.undisabled);
             garageCar.toggleDisableBtn('select', elementStatus.undisabled);
             garageCar.toggleDisableBtn('stop', elementStatus.disabled);
-            this.paginator.change(garageState.currentGaragePage, garageState.carsGarageCount, garageState.carsGarageLimit);
+            this.paginator.change(
+              garageState.currentGaragePage,
+              garageState.carsGarageCount,
+              garageState.carsGarageLimit
+            );
           }
 
           if (!garageCar) {
@@ -130,20 +134,11 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
             return;
           }
 
-          if (
-            stateCar.isRace &&
-            stateCar.movementData
-          ) {
+          if (stateCar.isRace && stateCar.movementData) {
             garageCar.start(stateCar.movementData);
-          } else if (
-            stateCar.isRace &&
-            stateCar.movementData === 0
-          ) {
+          } else if (stateCar.isRace && stateCar.movementData === 0) {
             garageCar.stop();
-          } else if (
-            !stateCar.isRace &&
-            stateCar.movementData === null
-          ) {
+          } else if (!stateCar.isRace && stateCar.movementData === null) {
             garageCar.comeBack();
             garageCar.status = 'ready';
           }
@@ -187,7 +182,6 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
     }
 
     if (propName === 'winner') {
-      console.log(garageState.winner);
       if (garageState.winner?.time) {
         const winner = { ...garageState.winner };
         garageState.cars.forEach((car) => {

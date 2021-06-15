@@ -3,8 +3,8 @@ export type StoreCarType = {
   color: string;
   id: number;
   isRace?: boolean;
-  movementData?: number,
-  abortController?: AbortController,
+  movementData?: number;
+  abortController?: AbortController;
 };
 
 export type CarIdType = number;

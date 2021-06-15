@@ -26,7 +26,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'prettier/prettier': [
-      'off',
+      'warn',
       {
         singleQuote: true,
       },

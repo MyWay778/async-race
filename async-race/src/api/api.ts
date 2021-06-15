@@ -3,7 +3,6 @@ import { CarInputType } from '@view/components/track-page/panel/car-input/types'
 import IApi from './i_api';
 import {
   DriveModeStatusType,
-  DriveSuccessType,
   EngineStatusType,
   GetWinnersOrderType,
   GetWinnersSortType,

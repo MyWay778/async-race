@@ -17,7 +17,11 @@ export default class Button extends BaseComponent {
 
   toggleDisabling = (isDisabled: boolean): void => {
     if (this.element instanceof HTMLButtonElement) {
-      this.element.disabled = isDisabled;
+      if (isDisabled && !this.element.disabled) {
+        this.element.disabled = isDisabled;
+      } else if (!isDisabled && this.element.disabled) {
+        this.element.disabled = isDisabled;
+      }
     }
   };
 }

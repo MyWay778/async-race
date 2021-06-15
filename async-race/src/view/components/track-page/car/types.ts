@@ -5,4 +5,4 @@ export type CarControlType = {
 
 export type CarBlockBtnStatusType = {
   [K in CarBtnNameType]: boolean;
-}
+};
