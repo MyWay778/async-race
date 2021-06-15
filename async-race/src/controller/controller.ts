@@ -139,9 +139,9 @@ export default class Controller implements IController {
       return;
     }
 
-    this.store.changeState('garagePage', 'winner', { id: carId });
-
     const time = Number((movementTime / 1000).toFixed(2));
+    this.store.changeState('garagePage', 'winner', { id: carId, time });
+
     const winner = await this.api.getWinner(carId);
     if (winner.wins) {
       winner.wins += 1;
@@ -150,7 +150,7 @@ export default class Controller implements IController {
       }
       this.api.updateWinner(winner);
       winner.time = time;
-      this.store.changeState('garagePage', 'winner', winner);
+      // this.store.changeState('garagePage', 'winner', winner);
     } else {
       const newWinner: WinnerType = {
         id: carId,
@@ -158,17 +158,17 @@ export default class Controller implements IController {
         time,
       };
       this.api.createWinner(newWinner);
-      this.store.changeState('garagePage', 'winner', winner);
+      // this.store.changeState('garagePage', 'winner', winner);
     }
 
     const winnerForModal = garageState.cars.find((c) => c.id === carId);
 
-    this.store.changeState(
-      'global',
-      'modalData',
-      `Winner ${winnerForModal.name} time: ${time}`
-    );
-    this.store.changeState('global', 'showModal', true);
+    // this.store.changeState(
+    //   'global',
+    //   'modalData',
+    //   `Winner ${winnerForModal.name} time: ${time}`
+    // );
+    // this.store.changeState('global', 'showModal', true);
   };
 
   startCar = async (carId: CarIdType): Promise<void> => {

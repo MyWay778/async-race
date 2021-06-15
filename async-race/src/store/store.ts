@@ -52,11 +52,10 @@ export default class Store implements IStore {
     value: T,
     options?: StoreChangeStateOptionsType
   ): void => {
-    console.log(this.state.garagePage.cars);
+    // console.log(this.state.garagePage.cars);
     this.state[state][prop] = value;
 
     if (!options?.notNotify) {
-      console.log('notify')
       this.notify(state, prop as never);
     }
   };

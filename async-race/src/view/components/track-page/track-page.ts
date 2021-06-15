@@ -205,7 +205,7 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
     }
 
     if (propName === 'winner') {
-      if (garageState.winner) {
+      if (garageState.winner?.time) {
         const winner = { ...garageState.winner };
         garageState.cars.forEach((car) => {
           if (car.id === winner.id) {
