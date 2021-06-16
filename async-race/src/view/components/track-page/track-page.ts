@@ -181,6 +181,10 @@ export default class TrackPage extends BaseComponent implements ITrackPage {
       );
     }
 
+    if (propName === 'currentGaragePage') {
+      this.setPageNumberBlock(String(garageState.currentGaragePage));
+    }
+
     if (propName === 'winner') {
       if (garageState.winner?.time) {
         const winner = { ...garageState.winner };
